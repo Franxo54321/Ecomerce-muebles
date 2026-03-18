@@ -933,42 +933,31 @@ function shutdown(reason) {
   shuttingDown = true;
   console.log('Iniciando cierre del servidor. Motivo:', reason || 'signal recibido');
 
-  // Fallback que forzará salida si no se cierra en X ms
   const FORCE_EXIT_TIMEOUT_MS = 5000;
   const forceExitTimer = setTimeout(() => {
     console.error(`Forzando salida después de ${FORCE_EXIT_TIMEOUT_MS} ms.`);
     process.exit(1);
   }, FORCE_EXIT_TIMEOUT_MS);
 
-  // Cerrar servidor HTTP si está corriendo
-  if (serverInstance) {
+  const closeMongoose = async (exitCode) => {
     try {
-      serverInstance.close((err) => {
-        if (err) console.error('Error cerrando el servidor HTTP:', err);
-        else console.log('Servidor HTTP cerrado.');
-        // Cerrar conexión a MongoDB después de cerrar el servidor
-        mongoose.connection.close(false, () => {
-          console.log('Conexión a MongoDB cerrada.');
-          clearTimeout(forceExitTimer);
-          process.exit(0);
-        });
-      });
-    } catch (err) {
-      console.error('Excepción al cerrar serverInstance:', err);
-      // Intentar cerrar mongoose igualmente
-      mongoose.connection.close(false, () => {
-        console.log('Conexión a MongoDB cerrada (error secundario).');
-        clearTimeout(forceExitTimer);
-        process.exit(1);
-      });
-    }
-  } else {
-    // Si no hay serverInstance, solo cerrar mongoose
-    mongoose.connection.close(false, () => {
+      await mongoose.connection.close();
       console.log('Conexión a MongoDB cerrada.');
-      clearTimeout(forceExitTimer);
-      process.exit(0);
+    } catch (e) {
+      console.error('Error cerrando MongoDB:', e.message);
+    }
+    clearTimeout(forceExitTimer);
+    process.exit(exitCode);
+  };
+
+  if (serverInstance) {
+    serverInstance.close((err) => {
+      if (err) console.error('Error cerrando el servidor HTTP:', err);
+      else console.log('Servidor HTTP cerrado.');
+      closeMongoose(err ? 1 : 0);
     });
+  } else {
+    closeMongoose(0);
   }
 }
 
