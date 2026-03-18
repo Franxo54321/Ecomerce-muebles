@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro - UrbanPlast</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #3E3E3E;
+            --secondary-color: #D9CBB8;
+            --accent-color: #4A7B3F;
+            --light-color: #E3E0DB;
+            --error-color: #e74c3c;
+            --success-color: #27ae60;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--light-color);
+            color: var(--primary-color);
+            line-height: 1.6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 500px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+        
+        .logo {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        .logo span {
+            color: var(--accent-color);
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--secondary-color);
+            border-radius: 5px;
+            font-size: 1rem;
+            background-color: var(--light-color);
+            transition: border-color 0.3s;
+        }
+        
+        .form-group input:focus {
+            border-color: var(--accent-color);
+            outline: none;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+        }
+        
+        .btn:hover {
+            background-color: #3D6534;
+        }
+        
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .login-link a {
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+        
+        .notification {
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .notification.error {
+            background-color: #ffebee;
+            border-left: 4px solid var(--error-color);
+            color: var(--error-color);
+        }
+        
+        .notification.success {
+            background-color: #e8f5e9;
+            border-left: 4px solid var(--success-color);
+            color: #2e7d32;
+        }
+        
+        .server-config {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .server-config h3 {
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+        
+        .code-block {
+            background-color: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 0.85rem;
+        }
+        
+        .toggle-config {
+            color: var(--accent-color);
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: inline-block;
+            margin-top: 10px;
+        }
+        
+        .toggle-config:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">Urban<span>Plast</span></div>
+        <h1>Crear Cuenta</h1>
+        
+        <div id="notification" class="notification"></div>
+        
+        <form id="registerForm">
+            <div class="form-group">
+                <label for="name">Nombre Completo</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Correo Electrónico</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Contraseña</label>
+                <input type="password" id="password" name="password" required minlength="6">
+            </div>
+            
+            <div class="form-group">
+                <label for="confirmPassword">Confirmar Contraseña</label>
+                <input type="password" id="confirmPassword" name="confirmPassword" required minlength="6">
+            </div>
+            
+            <button type="submit" class="btn">Registrarse</button>
+        </form>
+        
+        <div class="login-link">
+            ¿Ya tienes una cuenta? <a href="#" id="loginLink">Inicia sesión</a>
+        </div>
+        
+        <div class="server-config">
+            <h3><i class="fas fa-info-circle"></i> Solución al error 404</h3>
+            <p>El error 404 significa que el endpoint <code>/api/register</code> no existe en tu servidor.</p>
+            
+            <p><strong>Para solucionarlo, agrega este código a tu servidor:</strong></p>
+            
+            <div class="code-block">
+// Ruta de registro en server.js o routes/auth.js
+app.post('/api/register', async (req, res) => {
+  try {
+    const { name, email, password } = req.body;
+
+    // Validaciones básicas
+    if (!name || !email || !password) {
+      return res.status(400).json({ error: 'Todos los campos son requeridos' });
+    }
+
+    if (password.length < 6) {
+      return res.status(400).json({ error: 'La contraseña debe tener al menos 6 caracteres' });
+    }
+
+    // Aquí debes agregar la lógica para:
+    // 1. Verificar si el usuario ya existe
+    // 2. Hash de la contraseña (usando bcrypt)
+    // 3. Guardar el usuario en la base de datos
+
+    // Respuesta de éxito
+    res.status(201).json({
+      message: 'Usuario registrado exitosamente',
+      user: {
+        id: '123', // ID generado por la base de datos
+        name: name,
+        email: email
+      },
+      token: 'jwt-token-generado' // Debes generar un JWT token
+    });
+  } catch (error) {
+    console.error('Error en registro:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
+            </div>
+            
+            <p><strong>O alternativamente, usa el endpoint correcto:</strong></p>
+            <div class="code-block">
+// Cambia la URL en tu frontend de:
+const API_BASE = 'http://localhost:3000/api';
+// a:
+const API_BASE = 'http://localhost:3000/api/auth';
+
+// Y asegúrate de tener la ruta /api/auth/register en tu servidor
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('registerForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const notification = document.getElementById('notification');
+            notification.style.display = 'none';
+            
+            // Validaciones frontend
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (password !== confirmPassword) {
+                showNotification('Las contraseñas no coinciden', 'error');
+                return;
+            }
+            
+            if (password.length < 6) {
+                showNotification('La contraseña debe tener al menos 6 caracteres', 'error');
+                return;
+            }
+            
+            try {
+                // Intenta registrar con el endpoint /api/register
+                let response = await fetch('http://localhost:3000/api/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ name, email, password })
+                });
+                
+                // Si falla, intenta con /api/auth/register
+                if (response.status === 404) {
+                    response = await fetch('http://localhost:3000/api/auth/register', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ name, email, password })
+                    });
+                }
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showNotification('¡Cuenta creada exitosamente! Redirigiendo...', 'success');
+                    // Guardar token y redirigir
+                    localStorage.setItem('authToken', data.token);
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 2000);
+                } else {
+                    showNotification(data.error || 'Error en el registro', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showNotification('Error de conexión con el servidor. Asegúrate de que el servidor esté ejecutándose.', 'error');
+            }
+        });
+        
+        function showNotification(message, type) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.style.display = 'block';
+        }
+        
+        document.getElementById('loginLink').addEventListener('click', function(e) {
+            e.preventDefault();
+            window.location.href = 'login.html';
+        });
+    </script>
+</body>
+</html>

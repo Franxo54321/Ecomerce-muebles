@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UrbanPlast - Muebles de Plástico de Calidad</title>
+    <link rel="stylesheet" href="css/main2.css">
+    
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container header-content">
+            <a href="#" class="logo">Urban<span>Plast</span></a>
+            <nav>
+                <ul>
+                    <li><a href="#">Inicio</a></li>
+                    <li><a href="#products">Productos</a></li>
+                    <li><a href="#about">Nosotros</a></li>
+                    <li><a href="#contact">Contacto</a></li>
+                    <li id="auth-buttons" class="auth-buttons">
+                        <button class="auth-btn login-btn" onclick="openLoginModal()">Iniciar Sesión</button>
+                        <button class="auth-btn register-btn" onclick="openRegisterModal()">Registrarse</button>
+                    </li>
+                    <li id="user-menu" class="user-menu" style="display: none;">
+                        <span class="user-greeting" id="user-greeting"></span>
+                        <button class="logout-btn" onclick="logout()">Cerrar Sesión</button>
+                    </li>
+                    <li class="cart-icon" onclick="openCart()">
+                        🛒 <span class="cart-count">0</span>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1>Muebles de Plástico de Alta Calidad</h1>
+            <p>Diseño moderno, durabilidad y precios accesibles para tu hogar y jardín</p>
+            <a href="#products" class="btn">Ver Productos</a>
+        </div>
+    </section>
+
+    <!-- Products Section -->
+    <section id="products" class="products">
+        <div class="container">
+            <h2 class="section-title">Nuestros Productos</h2>
+            
+            <div class="categories">
+                <button class="category-btn active" data-category="all">Todos</button>
+                <button class="category-btn" data-category="interior">Interior</button>
+                <button class="category-btn" data-category="exterior">Exterior</button>
+                <button class="category-btn" data-category="jardin">Jardín</button>
+                <button class="category-btn" data-category="oficina">Oficina</button>
+            </div>
+            
+            <div class="products-grid" id="products-grid">
+                <!-- Los productos se cargarán dinámicamente con JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about">
+        <div class="container">
+            <h2 class="section-title">Sobre Nosotros</h2>
+            <div class="about-content">
+                <div class="about-text">
+                    <p>PlastiMuebles es una empresa con más de 15 años de experiencia en la fabricación y venta de muebles de plástico de la más alta calidad. Nuestros productos están diseñados para resistir las condiciones más exigentes, tanto en interiores como en exteriores.</p>
+                    <p>Utilizamos materiales reciclados y procesos de producción eco-amigables, contribuyendo al cuidado del medio ambiente mientras ofrecemos productos duraderos y estéticamente atractivos.</p>
+                    <p>Nuestra misión es llevar muebles funcionales, modernos y accesibles a cada hogar y espacio de trabajo.</p>
+                </div>
+                <div class="about-image">
+                    <span>[Imagen de nuestra fábrica]</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <div class="container">
+            <h2 class="section-title">Contacto</h2>
+            <div class="contact-form">
+                <form id="contactForm">
+                    <div class="form-group">
+                        <label for="name">Nombre</label>
+                        <input type="text" id="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Mensaje</label>
+                        <textarea id="message" required></textarea>
+                    </div>
+                    <button type="submit" class="btn">Enviar Mensaje</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>PlastiMuebles</h3>
+                    <p style="margin-right: 16px;">Muebles de plástico de calidad para todos los espacios de tu vida.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Enlaces Rápidos</h3>
+                    <ul>
+                        <li><a href="#">Inicio</a></li>
+                        <li><a href="#products">Productos</a></li>
+                        <li><a href="#about">Nosotros</a></li>
+                        <li><a href="#contact">Contacto</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Contacto</h3>
+                    <p>📍 Av. Principal 123, Ciudad</p>
+                    <p>📞 (123) 456-7890</p>
+                    <p>✉️ info@plastimuebles.com</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Síguenos</h3>
+                    <div class="social-links">
+                        <a href="#">📘</a>
+                        <a href="#">📸</a>
+                        <a href="#">📱</a>
+                        <a href="#">🐦</a>
+                    </div>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2023 PlastiMuebles - Todos los derechos reservados</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Login Modal -->
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('loginModal')">&times;</span>
+            <h2 class="modal-title">Iniciar Sesión</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="loginEmail">Email</label>
+                    <input type="email" id="loginEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Contraseña</label>
+                    <input type="password" id="loginPassword" required>
+                </div>
+                <button type="submit" class="btn">Iniciar Sesión</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div class="modal" id="registerModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('registerModal')">&times;</span>
+            <h2 class="modal-title">Registrarse</h2>
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="registerName">Nombre</label>
+                    <input type="text" id="registerName" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerEmail">Email</label>
+                    <input type="email" id="registerEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerPassword">Contraseña</label>
+                    <input type="password" id="registerPassword" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerConfirmPassword">Confirmar Contraseña</label>
+                    <input type="password" id="registerConfirmPassword" required>
+                </div>
+                <button type="submit" class="btn">Registrarse</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Cart Modal -->
+    <div class="modal" id="cartModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('cartModal')">&times;</span>
+            <h2 class="modal-title">Tu Carrito de Compras</h2>
+            <div class="cart-items" id="cartItems">
+                <!-- Los items del carrito se cargarán dinámicamente -->
+            </div>
+            <div class="cart-total" id="cartTotal">Total: $0.00</div>
+            <div id="checkout-section">
+                <button class="btn" onclick="showCheckoutForm()">Finalizar Compra</button>
+            </div>
+            <div id="checkout-form" class="checkout-form" style="display: none;">
+                <h3>Información de Envío</h3>
+                <form id="shippingForm">
+                    <div class="form-group">
+                        <label for="shippingStreet">Dirección</label>
+                        <input type="text" id="shippingStreet" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="shippingCity">Ciudad</label>
+                        <input type="text" id="shippingCity" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="shippingState">Estado/Provincia</label>
+                        <input type="text" id="shippingState" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="shippingZip">Código Postal</label>
+                        <input type="text" id="shippingZip" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="shippingCountry">País</label>
+                        <input type="text" id="shippingCountry" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="paymentMethod">Método de Pago</label>
+                        <select id="paymentMethod" required>
+                            <option value="credit_card">Tarjeta de Crédito</option>
+                            <option value="paypal">PayPal</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn">Pagar Ahora</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Variables globales
+        let currentUser = null;
+        let authToken = localStorage.getItem('authToken');
+        const API_BASE = 'http://localhost:3000/api';
+
+        // Funciones de autenticación
+        async function checkAuthStatus() {
+			if (!authToken) return;
+
+			try {
+				const res = await fetch(`${API_BASE}/me`, {
+					headers: { 'Authorization': `Bearer ${authToken}` }
+				});
+
+				if (res.ok) {
+					const data = await res.json();
+					const user = data.user;
+					document.getElementById('user-greeting').textContent = `Hola, ${user.name}`;
+					document.getElementById('auth-buttons').style.display = 'none';
+					document.getElementById('user-menu').style.display = 'flex';
+					currentUser = user;
+				} else {
+					// token inválido o expirado
+					console.warn('Token inválido o expirado, limpiando sesión');
+					logout();
+				}
+			} catch (error) {
+				console.error('Error verificando estado de autenticación:', error);
+				// En caso de error de red no forzamos logout inmediato, pero limpiamos si es 401/403
+				// (si quieres forzar logout, descomenta la siguiente línea)
+				// logout();
+			}
+		}
+        async function register(name, email, password) {
+		if (password !== document.getElementById('registerConfirmPassword').value) {
+			alert('Las contraseñas no coinciden');
+			return;
+		}
+
+		console.log('Registrando usuario', { name, email });
+		try {
+			const response = await fetch(`${API_BASE}/register`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ name, email, password })
+			});
+
+			// parse seguro de la respuesta
+			let data = null;
+			const ct = response.headers.get('content-type') || '';
+			if (ct.includes('application/json')) {
+				data = await response.json();
+			} else {
+				const text = await response.text();
+				console.warn('register response (no json):', text);
+			}
+
+			console.log('/api/register status:', response.status, data);
+
+			if (response.ok) {
+				authToken = data.token;
+				localStorage.setItem('authToken', authToken);
+				closeModal('registerModal');
+				await checkAuthStatus();
+				alert('Registro exitoso');
+			} else {
+				const errMsg = (data && data.error) ? data.error : `Error al registrarse (status ${response.status})`;
+				alert(errMsg);
+			}
+		} catch (err) {
+			console.error('Network error registering:', err);
+			alert('Error de conexión al intentar registrar. Revisa la consola y que server.js esté corriendo.');
+		}
+	}
+
+    // Función que faltaba para verificar la API
+    async function pingApi() {
+        try {
+            const response = await fetch(`${API_BASE}/health`);
+            if (!response.ok) {
+                console.warn('API health check failed');
+            } else {
+                console.log('API is responding');
+            }
+        } catch (error) {
+            console.error('Cannot reach API:', error);
+        }
+    }
+        async function login(email, password) {
+            try {
+                const response = await fetch(`${API_BASE}/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    authToken = data.token;
+                    localStorage.setItem('authToken', authToken);
+                    closeModal('loginModal');
+                    await checkAuthStatus();
+                    alert('Inicio de sesión exitoso');
+                } else {
+                    alert(data.error || 'Error al iniciar sesión');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error de conexión');
+            }
+        }
+
+        async function logout() {
+            authToken = null;
+            localStorage.removeItem('authToken');
+            currentUser = null;
+            document.getElementById('auth-buttons').style.display = 'flex';
+            document.getElementById('user-menu').style.display = 'none';
+            alert('Sesión cerrada');
+        }
+
+        // Funciones de modal
+        function openLoginModal() {
+            document.getElementById('loginModal').style.display = 'flex';
+        }
+
+        function openRegisterModal() {
+            document.getElementById('registerModal').style.display = 'flex';
+        }
+
+        function openCart() {
+            if (!authToken) {
+                alert('Por favor inicia sesión para ver tu carrito');
+                openLoginModal();
+                return;
+            }
+            updateCartDisplay();
+            document.getElementById('cartModal').style.display = 'flex';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        function showCheckoutForm() {
+            document.getElementById('checkout-section').style.display = 'none';
+            document.getElementById('checkout-form').style.display = 'block';
+        }
+
+        // Funciones de productos
+        async function fetchProducts() {
+            try {
+                const response = await fetch(`${API_BASE}/products`);
+                if (!response.ok) {
+                    console.error('/api/products responded with', response.status);
+                    return [];
+                }
+                return await response.json();
+            } catch (error) {
+                console.error('Error fetching products:', error);
+                return [];
+            }
+        }
+
+        /* Añadir pequeño estilo inline para enlaces de producto (si usas css externo, muévelo allí) */
+const styleTag = document.createElement('style');
+styleTag.textContent = `
+.product-title a { color: inherit; text-decoration: none; cursor: pointer; }
+.product-title a:hover { color: #3498db; text-decoration: underline; }
+`;
+document.head.appendChild(styleTag);
+
+        async function renderProducts(category = 'all') {
+            const productsGrid = document.getElementById('products-grid');
+            productsGrid.innerHTML = '';
+            const products = await fetchProducts();
+
+            const filteredProducts = category === 'all'
+                ? products
+                : products.filter(product => product.category === category);
+            
+            if (!filteredProducts || filteredProducts.length === 0) {
+                productsGrid.innerHTML = '<p style="text-align:center; width:100%;">No hay productos disponibles.</p>';
+                return;
+            }
+            
+            filteredProducts.forEach(product => {
+                const productElement = document.createElement('div');
+                productElement.className = 'product-card';
+                productElement.innerHTML = `
+                    <div class="product-image">
+                        <img src="${product.image}" alt="${product.name}" onerror="this.src='/img/default.png'">
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-title"><a href="/product.html?id=${product._id}">${product.name}</a></h3>
+                        <p class="product-price">$${product.price.toFixed(2)}</p>
+                        <p class="product-description">${product.description}</p>
+                        <button class="add-to-cart" onclick="addToCart('${product._id}')">Añadir al Carrito</button>
+                    </div>
+                `;
+                productsGrid.appendChild(productElement);
+            });
+        }
+
+        // Funciones del carrito
+        async function addToCart(productId) {
+            if (!authToken) {
+                alert('Por favor inicia sesión para agregar productos al carrito');
+                openLoginModal();
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/cart`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify({ productId, quantity: 1 })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    updateCartCount();
+                    alert('Producto añadido al carrito');
+                } else {
+                    alert(data.error || 'Error al agregar al carrito');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error de conexión');
+            }
+        }
+
+        async function updateCartCount() {
+            if (!authToken) return;
+
+            try {
+                const response = await fetch(`${API_BASE}/cart`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+
+                if (response.ok) {
+                    const cart = await response.json();
+                    const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
+                    document.querySelector('.cart-count').textContent = cartCount;
+                }
+            } catch (error) {
+                console.error('Error updating cart count:', error);
+            }
+        }
+
+        async function updateCartDisplay() {
+            if (!authToken) return;
+
+            try {
+                const response = await fetch(`${API_BASE}/cart`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+
+                const cartItems = document.getElementById('cartItems');
+                const cartTotal = document.getElementById('cartTotal');
+
+                if (response.ok) {
+                    const cart = await response.json();
+                    
+                    cartItems.innerHTML = '';
+                    if (cart.length === 0) {
+                        cartItems.innerHTML = '<p>Tu carrito está vacío</p>';
+                        cartTotal.textContent = 'Total: $0.00';
+                        return;
+                    }
+
+                    let total = 0;
+                    cart.forEach(item => {
+                        const itemTotal = item.price * item.quantity;
+                        total += itemTotal;
+
+                        const cartItem = document.createElement('div');
+                        cartItem.className = 'cart-item';
+                        cartItem.innerHTML = `
+                            <div>
+                                <h4>${item.name}</h4>
+                                <p>$${item.price.toFixed(2)} x ${item.quantity}</p>
+                            </div>
+                            <div>
+                                <p>$${itemTotal.toFixed(2)}</p>
+                                <button onclick="removeFromCart('${item.productId}')">Eliminar</button>
+                            </div>
+                        `;
+                        cartItems.appendChild(cartItem);
+                    });
+                    
+                    cartTotal.textContent = `Total: $${total.toFixed(2)}`;
+                }
+            } catch (error) {
+                console.error('Error updating cart display:', error);
+            }
+        }
+
+        async function removeFromCart(productId) {
+            try {
+                const response = await fetch(`${API_BASE}/cart/${productId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+
+                if (response.ok) {
+                    updateCartCount();
+                    updateCartDisplay();
+                } else {
+                    const data = await response.json();
+                    alert(data.error || 'Error al eliminar del carrito');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error de conexión');
+            }
+        }
+
+        async function checkout(shippingInfo, paymentMethod) {
+            try {
+                // Primero obtener el carrito actual
+                const cartResponse = await fetch(`${API_BASE}/cart`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+
+                if (!cartResponse.ok) {
+                    throw new Error('Error obteniendo el carrito');
+                }
+
+                const cart = await cartResponse.json();
+                
+                if (cart.length === 0) {
+                    alert('Tu carrito está vacío');
+                    return;
+                }
+
+                // Realizar el checkout
+                const response = await fetch(`${API_BASE}/checkout`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify({
+                        cart,
+                        shippingAddress: shippingInfo,
+                        paymentMethod
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert('¡Compra realizada con éxito! Número de orden: ' + data.orderId);
+                    closeModal('cartModal');
+                    updateCartCount();
+                } else {
+                    alert(data.error || 'Error al procesar la compra');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error de conexión');
+            }
+        }
+
+        // Configurar filtros de categoría
+        function setupCategoryFilters() {
+            const categoryButtons = document.querySelectorAll('.category-btn');
+            
+            categoryButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    categoryButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    const category = button.getAttribute('data-category');
+                    renderProducts(category);
+                });
+            });
+        }
+
+        // Configurar formularios
+        function setupForms() {
+            // Formulario de contacto
+            document.getElementById('contactForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const name = document.getElementById('name').value;
+                const email = document.getElementById('email').value;
+                const message = document.getElementById('message').value;
+
+                try {
+                    const response = await fetch(`${API_BASE}/contact`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ name, email, message })
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        alert('¡Gracias por tu mensaje! Te contactaremos pronto.');
+                        document.getElementById('contactForm').reset();
+                    } else {
+                        alert(data.error || 'Error al enviar el mensaje');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Error de conexión');
+                }
+            });
+
+            // Formulario de login
+            document.getElementById('loginForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const email = document.getElementById('loginEmail').value;
+                const password = document.getElementById('loginPassword').value;
+                await login(email, password);
+            });
+
+            // Formulario de registro
+
+            document.getElementById('registerForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const name = document.getElementById('registerName').value;
+                const email = document.getElementById('registerEmail').value;
+                const password = document.getElementById('registerPassword').value;
+                await register(name, email, password);
+            });
+
+            // Formulario de envío
+            document.getElementById('shippingForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const shippingInfo = {
+                    street: document.getElementById('shippingStreet').value,
+                    city: document.getElementById('shippingCity').value,
+                    state: document.getElementById('shippingState').value,
+                    zipCode: document.getElementById('shippingZip').value,
+                    country: document.getElementById('shippingCountry').value
+                };
+                const paymentMethod = document.getElementById('paymentMethod').value;
+                await checkout(shippingInfo, paymentMethod);
+            });
+        }
+
+        // Inicializar la aplicación
+        document.addEventListener('DOMContentLoaded', async () => {
+            await pingApi();
+            checkAuthStatus();
+            // renderProducts devuelve y muestra productos
+            await renderProducts();
+            setupCategoryFilters();
+            setupForms();
+            updateCartCount();
+            
+            // Sólo poblar la DB con ejemplos si la colección está VACÍA
+            try {
+                const resp = await fetch(`${API_BASE}/products`);
+                if (resp.ok) {
+                    const list = await resp.json();
+                    if (!list || list.length === 0) {
+                        console.log('No hay productos. Solicitando poblar DB con ejemplos...');
+                        fetch(`${API_BASE}/populate-products`, { method: 'POST' })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data && data.success) {
+                                    console.log('Base de datos poblada con productos de ejemplo');
+                                    renderProducts(); // Volver a renderizar los productos
+                                } else {
+                                    console.log('populate-products no ejecutado o no reportó éxito:', data);
+                                }
+                            })
+                            .catch(error => console.error('Error poblando la base de datos:', error));
+                    } else {
+                        console.log(`Hay ${list.length} productos en la base, no se poblará automáticamente.`);
+                    }
+                }
+            } catch (err) {
+                console.error('No se pudo verificar existencia de productos antes de poblar:', err);
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Producto - UrbanPlast</title>
+  <!-- Añadir import del CSS global para usar la misma paleta que main2.html -->
+  <link rel="stylesheet" href="css/main2.css">
+  <style>
+    :root{
+      --accent:#f0c38c; /* botón color */
+      --accent-dark:#e0ad63;
+      --primary:#222;
+      --muted:#666;
+      --bg:#fff;
+      --page-bg:#f7f7f7;
+    }
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;color:var(--primary);background:var(--page-bg)}
+    .wrap{max-width:1200px;margin:28px auto;padding:0 20px}
+    .breadcrumbs{font-size:13px;color:var(--muted);margin-bottom:18px}
+    .product-grid{display:grid;grid-template-columns:80px 1fr 360px;gap:24px;align-items:start;background:transparent}
+    /* thumbnails */
+    .thumbs{display:flex;flex-direction:column;gap:12px}
+    .thumb{width:72px;height:72px;border:1px solid #e6e6e6;border-radius:6px;overflow:hidden;cursor:pointer;display:flex;align-items:center;justify-content:center;background:#fafafa}
+    .thumb img{width:100%;height:100%;object-fit:cover;display:block}
+    .thumb.active{outline:2px solid #ddd}
+    /* main image */
+    .main-media{display:flex;flex-direction:column;align-items:center;justify-content:center}
+    .main-media .main-img-wrap{width:100%;max-width:640px;background:#fff;border-radius:8px;overflow:hidden;border:1px solid #eee;display:flex;align-items:center;justify-content:center}
+    .main-media img.main-img{width:100%;height:auto;object-fit:cover;display:block}
+    .nav-arrows{position:relative;width:100%;max-width:640px;display:flex;justify-content:space-between;margin-top:8px}
+    .nav-arrows button{background:transparent;border:1px solid #eee;border-radius:6px;padding:6px 10px;cursor:pointer}
+    /* details */
+    .details{background:var(--bg);padding:18px;border-radius:8px;border:1px solid #eee}
+    .title{font-size:26px;font-weight:700;margin:0 0 8px}
+    .sku{font-size:13px;color:var(--muted);margin-bottom:12px}
+    .price{font-size:28px;color:#111;font-weight:800;margin:6px 0}
+    .price .small{font-size:14px;color:var(--muted);font-weight:500;margin-left:8px}
+    .pay-note{color:#7b1fa2;font-size:14px;margin-top:8px}
+    .desc{color:var(--muted);margin:14px 0}
+    .stock{margin:8px 0;color:#0a7a00;font-weight:600}
+    .qty-row{display:flex;gap:8px;align-items:center;margin-top:14px}
+    .qty{display:flex;align-items:center;border:1px solid #ddd;border-radius:6px;overflow:hidden}
+    .qty button{background:#fff;border:none;padding:8px 10px;cursor:pointer}
+    .qty input{width:60px;text-align:center;border:none;padding:8px 10px;font-size:16px}
+    .add-btn{background:var(--accent);border:none;padding:12px 18px;border-radius:6px;cursor:pointer;font-weight:700;color:#111;margin-left:8px;flex:1}
+    .add-btn:hover{background:var(--accent-dark)}
+    .meta{font-size:13px;color:var(--muted);margin-top:14px}
+    .thumbs-scroll{max-height:680px;overflow:auto;padding-right:6px}
+    /* Estilos simples para el modal del carrito y auth buttons */
+    .auth-buttons { display:inline-flex; gap:8px; align-items:center; }
+    .auth-link { color:var(--primary-color, #222); text-decoration:none; padding:6px 10px; border-radius:6px; border:1px solid transparent;cursor: pointer; }
+    .auth-link:hover { background: rgba(0,0,0,0.03); }
+
+    .modal { position:fixed; inset:0; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,0.4); z-index:1000; }
+    .modal.show { display:flex; }
+    .modal-content { background:#fff; border-radius:8px; width:90%; max-width:720px; max-height:80vh; overflow:auto; padding:18px; box-shadow:0 10px 30px rgba(0,0,0,0.2); }
+    .cart-item { display:flex; justify-content:space-between; gap:12px; padding:8px 0; border-bottom:1px solid #eee; align-items:center; }
+    .cart-item img { width:64px; height:64px; object-fit:cover; border-radius:6px; }
+    .cart-actions { display:flex; gap:8px; align-items:center; }
+    .btn-small { padding:6px 10px; border-radius:6px; border:none; cursor:pointer; background:#eee; }
+    /* Responsive */
+    @media (max-width: 992px){
+      .product-grid{grid-template-columns:64px 1fr;grid-template-rows:auto auto;gap:12px}
+      .details{grid-column:1 / -1}
+      .main-media .main-img-wrap img.main-img{height:auto}
+    }
+  </style>
+</head>
+<body>
+  <!-- Header de navegación (nuevo) -->
+  <header class="site-header" style="background:transparent;padding:12px 0;border-bottom:1px solid rgba(0,0,0,0.05);top: auto;">
+    <div class="wrap" style="display:flex;align-items:center;justify-content:space-between;">
+      <a href="main2.html" class="logo" style="font-weight:700;color:var(--primary-color);text-decoration:none">Urban<span style="color:var(--accent-color,#f0c38c)">Plast</span></a>
+      <nav style="display:flex;gap:18px;align-items:center;">
+        <a href="main2.html" style="color:var(--primary-color);text-decoration:none">Inicio</a>
+        <a href="productos.html" style="color:var(--primary-color);text-decoration:none">Productos</a>
+        <a id="adminLink" href="panel_Admin.html" style="color:var(--primary-color);text-decoration:none;display:none">Admin</a>
+
+        <div id="authArea" class="auth-buttons">
+          <a id="loginLink" class="auth-link" href="login.html">Iniciar Sesión</a>
+          <a id="registerLink" class="auth-link" href="register.html">Registrarse</a>
+          <div id="userMenu" style="display:none; align-items:center;">
+            <span id="userGreeting" style="margin-right:8px;color: black;" ></span>
+            <button id="logoutBtn" class="auth-link">Cerrar Sesión</button>
+          </div>
+        </div>
+
+        <button id="openCartBtn" style="background:transparent;border: none;cursor:pointer;font-size:18px">🛒 <span id="cartCount">0</span></button>
+      </nav>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <div class="breadcrumbs" id="breadcrumbs">Inicio · Productos · <span id="crumb-name">Cargando...</span></div>
+
+    <div id="productArea" class="product-grid">
+      <!-- thumbnails -->
+      <div class="thumbs-scroll">
+        <div class="thumbs" id="thumbs"></div>
+      </div>
+
+      <!-- main image -->
+      <div class="main-media" id="mainMedia">
+        <div class="main-img-wrap">
+          <img id="mainImage" class="main-img" src="img/logo.png" alt="imagen producto">
+        </div>
+        <div class="nav-arrows">
+          <button id="prevBtn" title="Anterior">◀</button>
+          <button id="nextBtn" title="Siguiente">▶</button>
+        </div>
+      </div>
+
+      <!-- details -->
+      <div class="details" id="details">
+        <div class="title" id="productName">Cargando...</div>
+        <div class="sku" id="productSku">SKU: —</div>
+        <div class="price" id="productPrice">$0.00 <span class="small" id="priceNote"></span></div>
+        <div class="pay-note" id="payNote" style="display:none"></div>
+        <div class="desc" id="productDesc">—</div>
+        <div class="stock" id="productStock"></div>
+
+        <!-- Selector de color (se rellena en renderDetails) -->
+        <div style="margin-top:10px;">
+          <label for="colorSelect">Color:
+            <select id="colorSelect" style="margin-left:8px;padding:6px;border-radius:4px;border:1px solid #ddd;">
+              <option value="">Seleccionar</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="qty-row" style="margin-top:12px;">
+          <div class="qty" role="spinbutton" aria-label="Cantidad">
+            <button type="button" id="qtyMinus">−</button>
+            <input id="qtyInput" type="number" value="1" min="1" />
+            <button type="button" id="qtyPlus">+</button>
+          </div>
+          <button id="addToCartBtn" class="add-btn">Agregar al carrito</button>
+        </div>
+
+        <div class="meta" id="productMeta"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Carrito -->
+  <div id="cartModal" class="modal" aria-hidden="true">
+    <div class="modal-content">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <h3>Tu Carrito</h3>
+        <button onclick="closeCart()" class="btn-small">Cerrar</button>
+      </div>
+      <div id="cartModalItems" style="margin-top:12px;">
+        <!-- items dinámicos -->
+      </div>
+      <div id="cartModalTotal" style="margin-top:12px;font-weight:700;">Total: $0.00</div>
+      <div style="margin-top:12px;display:flex;gap:8px;justify-content:flex-end;">
+        <button id="checkoutBtn" class="add-btn">Finalizar compra</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+  const API_BASE = 'http://localhost:3000/api';
+  function qsParam(n){ return new URLSearchParams(location.search).get(n); }
+
+  let images = [];
+  let currentIndex = 0;
+  let productData = null;
+
+  // Local cart helpers (guardar color y cantidad)
+  function readLocalCart(){
+    try{ return JSON.parse(localStorage.getItem('cart')) || []; } catch(e){ return []; }
+  }
+  function writeLocalCart(cart){
+    localStorage.setItem('cart', JSON.stringify(cart));
+    updateCartCountUI();
+  }
+  function updateCartCountUI(){
+    const cart = readLocalCart();
+    const count = cart.reduce((s,i)=> s + (i.quantity||0), 0);
+    const el = document.getElementById('cartCount');
+    if(el) el.textContent = count;
+  }
+
+  async function addToServerCart(token, productId, quantity){
+    try{
+      const res = await fetch(`${API_BASE}/cart`, {
+        method:'POST',
+        headers:{ 'Content-Type':'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ productId, quantity })
+      });
+      return res.ok;
+    }catch(e){ return false; }
+  }
+
+  async function loadProduct(){
+    const id = qsParam('id');
+    if(!id){ document.getElementById('productArea').innerHTML = '<p>ID de producto no especificado.</p>'; return; }
+    try{
+      const res = await fetch(`${API_BASE}/products/${id}`);
+      if(!res.ok){ document.getElementById('productArea').innerHTML = `<p>Error ${res.status}</p>`; return; }
+      const product = await res.json();
+      productData = product;
+      images = (product.images && product.images.length) ? product.images.slice() : [product.image || '/img/default.png'];
+      currentIndex = 0;
+      renderGallery();
+      renderDetails();
+      updateCartCountUI();
+    }catch(err){
+      console.error(err);
+      document.getElementById('productArea').innerHTML = '<p>Error de conexión al servidor</p>';
+    }
+  }
+
+  function renderGallery(){
+    const thumbsEl = document.getElementById('thumbs');
+    thumbsEl.innerHTML = '';
+    images.forEach((src, idx) => {
+      const d = document.createElement('div');
+      d.className = 'thumb' + (idx===currentIndex ? ' active' : '');
+      d.innerHTML = `<img src="${src}" alt="thumb-${idx}" onerror="this.src='/img/default.png'">`;
+      d.addEventListener('click', ()=>{ currentIndex = idx; updateMain(); });
+      thumbsEl.appendChild(d);
+    });
+    updateMain();
+  }
+
+  function updateMain(){
+    const mainImg = document.getElementById('mainImage');
+    mainImg.src = images[currentIndex] || '/img/default.png';
+    // update active class
+    document.querySelectorAll('.thumb').forEach((el, i)=> el.classList.toggle('active', i===currentIndex));
+  }
+
+  document.getElementById('prevBtn').addEventListener('click', ()=> {
+    if(images.length===0) return;
+    currentIndex = (currentIndex - 1 + images.length) % images.length;
+    updateMain();
+  });
+  document.getElementById('nextBtn').addEventListener('click', ()=> {
+    if(images.length===0) return;
+    currentIndex = (currentIndex + 1) % images.length;
+    updateMain();
+  });
+
+  function renderDetails(){
+    document.getElementById('productName').textContent = productData.name;
+    document.getElementById('crumb-name').textContent = productData.name;
+    document.getElementById('productSku').textContent = `SKU: ${productData._id || ''}`;
+    document.getElementById('productPrice').innerHTML = `$${(productData.price||0).toFixed(2)}`;
+    document.getElementById('productDesc').textContent = productData.description || '';
+    document.getElementById('productStock').textContent = productData.stock ? `Stock: ${productData.stock}` : 'Sin stock';
+    document.getElementById('productMeta').innerHTML = `<strong>Material:</strong> ${productData.material || '-'} · <strong>Colores:</strong> ${(productData.colors||[]).join(', ') || '-'}`;
+
+    // Rellenar selector de color
+    const colorSelect = document.getElementById('colorSelect');
+    colorSelect.innerHTML = '';
+    const colors = (productData.colors && productData.colors.length) ? productData.colors : ['Default'];
+    colors.forEach(c => {
+      const opt = document.createElement('option');
+      opt.value = c;
+      opt.textContent = c;
+      colorSelect.appendChild(opt);
+    });
+  }
+
+  // cantidad controls
+  const qtyInput = document.getElementById('qtyInput');
+  document.getElementById('qtyMinus').addEventListener('click', ()=> { qtyInput.value = Math.max(1, parseInt(qtyInput.value||'1')-1); });
+  document.getElementById('qtyPlus').addEventListener('click', ()=> { qtyInput.value = Math.max(1, parseInt(qtyInput.value||'1')+1); });
+
+  // add to cart: guardar localmente con color y cantidad, y enviar al server si hay token
+  document.getElementById('addToCartBtn').addEventListener('click', async ()=>{
+    const color = document.getElementById('colorSelect') ? document.getElementById('colorSelect').value : '';
+    const qty = Math.max(1, parseInt(qtyInput.value||'1'));
+    if(!productData){ alert('Producto no cargado'); return; }
+
+    // Guardar local
+    const cart = readLocalCart();
+    const existingIdx = cart.findIndex(i => i.productId === productData._id && i.color === color);
+    if(existingIdx > -1){
+      cart[existingIdx].quantity += qty;
+    } else {
+      cart.push({
+        productId: productData._id,
+        name: productData.name,
+        price: productData.price || 0,
+        image: (productData.images && productData.images[0]) || productData.image || '',
+        color,
+        quantity: qty
+      });
+    }
+    writeLocalCart(cart);
+
+    // Intentar guardar en backend (solo cantidad)
+    const token = localStorage.getItem('authToken');
+    if(token){
+      const ok = await addToServerCart(token, productData._id, qty);
+      if(!ok) console.warn('No se pudo guardar en backend; guardado solo local');
+    }
+
+    alert(`${productData.name} (${color}) agregado al carrito x${qty}`);
+  });
+
+  // Mostrar/ocultar UI de auth según sesión
+  async function checkAuthStatus() {
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+      updateAuthUI(null);
+      return null;
+    }
+    try {
+      const res = await fetch(`${API_BASE}/me`, { headers: { 'Authorization': `Bearer ${token}` } });
+      if (!res.ok) { updateAuthUI(null); return null; }
+      const data = await res.json();
+      updateAuthUI(data.user);
+      return data.user;
+    } catch (err) {
+      console.error('Error checking auth:', err);
+      updateAuthUI(null);
+      return null;
+    }
+  }
+
+  function updateAuthUI(user) {
+    const loginLink = document.getElementById('loginLink');
+    const registerLink = document.getElementById('registerLink');
+    const userMenu = document.getElementById('userMenu');
+    const userGreeting = document.getElementById('userGreeting');
+    const adminLink = document.getElementById('adminLink');
+
+    if (user) {
+      loginLink.style.display = 'none';
+      registerLink.style.display = 'none';
+      userMenu.style.display = 'flex';
+      userGreeting.textContent = `Hola, ${user.name}`;
+      // Mostrar admin solo si role === 'admin'
+      adminLink.style.display = (user.role && user.role === 'admin') ? 'inline' : 'none';
+    } else {
+      loginLink.style.display = 'inline';
+      registerLink.style.display = 'inline';
+      userMenu.style.display = 'none';
+      adminLink.style.display = 'none';
+    }
+  }
+
+  // logout local
+  document.getElementById('logoutBtn').addEventListener('click', () => {
+    localStorage.removeItem('authToken');
+    updateAuthUI(null);
+    alert('Sesión cerrada');
+  });
+
+  // Abrir / cerrar carrito (modal)
+  document.getElementById('openCartBtn').addEventListener('click', () => openCart());
+  function openCart(){
+    updateCartModal();
+    const modal = document.getElementById('cartModal');
+    modal.classList.add('show');
+    modal.setAttribute('aria-hidden','false');
+  }
+  function closeCart(){
+    const modal = document.getElementById('cartModal');
+    modal.classList.remove('show');
+    modal.setAttribute('aria-hidden','true');
+  }
+
+  // Rellenar modal con contenido del localStorage cart (incluye color)
+  function updateCartModal(){
+    const itemsEl = document.getElementById('cartModalItems');
+    const totalEl = document.getElementById('cartModalTotal');
+    const cart = readLocalCart();
+    itemsEl.innerHTML = '';
+    if (cart.length === 0) {
+      itemsEl.innerHTML = '<p>Tu carrito está vacío.</p>';
+      totalEl.textContent = 'Total: $0.00';
+      document.getElementById('checkoutBtn').disabled = true;
+      return;
+    }
+    let total = 0;
+    cart.forEach((it, idx) => {
+      const itemTotal = (it.price || 0) * (it.quantity || 0);
+      total += itemTotal;
+      const div = document.createElement('div');
+      div.className = 'cart-item';
+      div.innerHTML = `
+        <div style="display:flex;gap:12px;align-items:center">
+          <img src="${it.image || '/img/default.png'}" alt="${it.name}">
+          <div>
+            <div style="font-weight:700">${it.name}</div>
+            <div style="font-size:13px;color:#666">Color: ${it.color || '-'}</div>
+            <div style="font-size:13px;color:#666">Cant: ${it.quantity}</div>
+          </div>
+        </div>
+        <div class="cart-actions">
+          <div style="font-weight:700">$${itemTotal.toFixed(2)}</div>
+          <button class="btn-small" data-idx="${idx}" onclick="removeFromLocalCart(${idx})">Eliminar</button>
+        </div>
+      `;
+      itemsEl.appendChild(div);
+    });
+    totalEl.textContent = `Total: $${total.toFixed(2)}`;
+    document.getElementById('checkoutBtn').disabled = false;
+  }
+
+  function removeFromLocalCart(index){
+    const cart = readLocalCart();
+    if (index >=0 && index < cart.length) {
+      cart.splice(index,1);
+      writeLocalCart(cart);
+      updateCartModal();
+    }
+  }
+
+  // Checkout desde modal: si hay token hacemos checkout del backend con carrito local
+  document.getElementById('checkoutBtn').addEventListener('click', async () => {
+    const token = localStorage.getItem('authToken');
+    const cart = readLocalCart();
+    if (cart.length === 0) { alert('Carrito vacío'); return; }
+    if (!token) { alert('Por favor inicia sesión para finalizar compra'); window.location.href = '/login.html'; return; }
+
+    // Backend espera items con productId, quantity, price etc. Enviamos solo lo necesario
+    try {
+      const res = await fetch(`${API_BASE}/checkout`, {
+        method: 'POST',
+        headers: { 'Content-Type':'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({
+          cart: cart.map(i => ({ productId: i.productId, quantity: i.quantity, price: i.price })),
+          shippingAddress: {}, // aquí podrías pedir datos antes
+          paymentMethod: 'local'
+        })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        alert('Compra realizada. Orden: '+ (data.orderId || 'N/A'));
+        // limpiar carrito local y cerrar modal
+        writeLocalCart([]);
+        closeCart();
+      } else {
+        alert(data.error || 'Error en checkout');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Error de conexión al procesar la compra');
+    }
+  });
+
+  // Inicializaciones finales: comprobar auth y cargar producto
+  (async function init(){
+    await checkAuthStatus();
+    updateCartCountUI();
+    loadProduct();
+  })();
+</script>
+</body>
+</html>

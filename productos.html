@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Productos - UrbanPlast</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/productos.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <!-- Header de navegación -->
+    <header class="site-header">
+        <div class="container header-inner">
+            <a href="main2.html" class="logo">Urban<span>Plast</span></a>
+            <nav class="main-nav">
+                <a href="index.html">Inicio</a>
+                <a href="productos.html">Productos</a>
+                <a href="panel_Admin.html">Admin</a>
+                <a href="carrito.html" id="cartLink">Carrito (<span id="cartCount">0</span>)</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+        <div class="container">
+            <a href="main2html">Inicio</a> > <span>Productos</span>
+        </div>
+    </div>
+
+    <!-- Página de Productos -->
+    <section class="products-page">
+        <div class="container">
+            <h1>Productos</h1>
+            
+            <div class="products-container">
+                <!-- Filtros -->
+                <aside class="filters">
+                    <h3>Filtrar por</h3>
+                    
+                    <div class="filter-group">
+                        <h4>CATEGORÍAS</h4>
+                        <ul>
+                            <li><a href="#">Almohadones</a></li>
+                            <li><a href="#">Banquetas</a></li>
+                            <li><a href="#">Bibliotecas / Estanterías</a></li>
+                            <li><a href="#">Botineros</a></li>
+                            <li><a href="#">Comodas</a></li>
+                            <li><a href="#">Cristaleros</a></li>
+                            <li><a href="#">Cunas</a></li>
+                            <li><a href="#">Escritorios</a></li>
+                            <li><a href="#">Ver más</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <h4>COLOR</h4>
+                        <ul>
+                            <li><a href="#">Blanco (7)</a></li>
+                            <li><a href="#">Beige (7)</a></li>
+                            <li><a href="#">Negro (2)</a></li>
+                            <li><a href="#">Marrón (4)</a></li>
+                        </ul>
+                    </div>
+                </aside>
+                
+                <!-- Lista de Productos -->
+                <div class="products-list">
+                    <div class="sort-options">
+                        <span>Ordenar por</span>
+                        <select>
+                            <option>Más vendidos</option>
+                            <option>Menor precio</option>
+                            <option>Mayor precio</option>
+                            <option>Novedades</option>
+                        </select>
+                    </div>
+                    
+                    <div class="products-grid">
+                        <!-- Producto 1 -->
+                        <div class="product-card" data-id="prod-001" data-name="Mesa De Luz California 3 Cajones" data-price="376000" data-image="img/mesa-luz.jpg">
+                            <div class="product-image" style="background-image: url('img/mesa-luz.jpg');"></div>
+                            <div class="product-info">
+                                <h3>Mesa De Luz California 3 Cajones</h3>
+                                <p>Tapa Madera - LMO</p>
+                                <div class="price">
+                                    <span class="original">$376.000</span>
+                                    <span class="installment">12 x $33,333 sin interés</span>
+                                    <span class="cash">$236.600 con EFECTIVO</span>
+                                </div>
+                                <div class="stock">¡Solo quedan 5 en stock!</div>
+
+                                <!-- Selector de color -->
+                                <label>Color:
+                                    <select class="color-select">
+                                        <option value="Blanco">Blanco</option>
+                                        <option value="Beige">Beige</option>
+                                        <option value="Madera">Madera</option>
+                                    </select>
+                                </label>
+
+                                <!-- Cantidad -->
+                                <label style="margin-left:10px">Cantidad:
+                                    <input type="number" class="qty-input" value="1" min="1" style="width:60px;">
+                                </label>
+
+                                <button class="btn-add">Agregar al carrito</button>
+                            </div>
+                        </div>
+                        
+                        <!-- Producto 2 -->
+                        <div class="product-card" data-id="prod-002" data-name="Mesa de luz Brooklyn" data-price="399000" data-image="img/mesa-brooklyn.jpg">
+                            <div class="product-image" style="background-image: url('img/mesa-brooklyn.jpg');"></div>
+                            <div class="product-info">
+                                <h3>Mesa de luz Brooklyn</h3>
+                                <p>Con bandejero toda laqueada</p>
+                                <div class="price">
+                                    <span class="original">$399.000</span>
+                                    <span class="installment">12 x $33,250 sin interés</span>
+                                    <span class="cash">$239.400 con EFECTIVO</span>
+                                </div>
+
+                                <label>Color:
+                                    <select class="color-select">
+                                        <option value="Blanco">Blanco</option>
+                                        <option value="Natural">Natural</option>
+                                        <option value="Negro">Negro</option>
+                                    </select>
+                                </label>
+
+                                <label style="margin-left:10px">Cantidad:
+                                    <input type="number" class="qty-input" value="1" min="1" style="width:60px;">
+                                </label>
+
+                                <button class="btn-add">Agregar al carrito</button>
+                            </div>
+                        </div>
+                        
+                        <!-- Producto 3 -->
+                        <div class="product-card" data-id="prod-003" data-name="Silla Osaka color mostaza" data-price="340406" data-image="img/silla-osaka.jpg">
+                            <div class="product-image" style="background-image: url('img/silla-osaka.jpg');"></div>
+                            <div class="product-info">
+                                <h3>Silla Osaka color mostaza</h3>
+                                <p>Genoud</p>
+                                <div class="price">
+                                    <span class="original">$340.406 <span class="discount">15% OFF</span></span>
+                                    <span class="installment">12 x $28,997 sin interés</span>
+                                    <span class="cash">$304.243,60 con EFECTIVO</span>
+                                </div>
+                                <button class="btn-add">Agregar al carrito</button>
+                            </div>
+                        </div>
+                        
+                        <!-- Producto 4 -->
+                        <div class="product-card" data-id="prod-004" data-name="Silla Nacro gris claro" data-price="359833" data-image="img/silla-nacro.jpg">
+                            <div class="product-image" style="background-image: url('img/silla-nacro.jpg');"></div>
+                            <div class="product-info">
+                                <h3>Silla Nacro gris claro</h3>
+                                <p>GENOUD</p>
+                                <div class="price">
+                                    <span class="original">$359.833 <span class="discount">15% OFF</span></span>
+                                    <span class="installment">12 x $29,986 sin interés</span>
+                                    <span class="cash">$218.898,00 con EFECTIVO</span>
+                                </div>
+                                <button class="btn-add">Agregar al carrito</button>
+                            </div>
+                        </div>
+                        
+                        <!-- Más productos... -->
+                    </div>
+                    
+                    <div class="pagination">
+                        <a href="#">&laquo;</a>
+                        <a href="#" class="active">1</a>
+                        <a href="#">2</a>
+                        <a href="#">3</a>
+                        <a href="#">&raquo;</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer (igual que en index.html) -->
+    <footer>
+        <!-- Mismo código de footer que en index.html -->
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script>
+  // filepath: c:\Users\a\Desktop\pagina de muebles\productos.html
+  (function(){
+    const API_BASE = 'http://localhost:3000/api';
+
+    function readLocalCart(){
+      try{
+        return JSON.parse(localStorage.getItem('cart')) || [];
+      }catch(e){
+        return [];
+      }
+    }
+    function writeLocalCart(cart){
+      localStorage.setItem('cart', JSON.stringify(cart));
+      updateCartCountUI();
+    }
+    function updateCartCountUI(){
+      const cart = readLocalCart();
+      const count = cart.reduce((s,i)=> s + (i.quantity||0), 0);
+      const el = document.getElementById('cartCount');
+      if(el) el.textContent = count;
+    }
+
+    async function addToServerCart(token, productId, quantity){
+      try{
+        const res = await fetch(`${API_BASE}/cart`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ productId, quantity })
+        });
+        return res.ok;
+      }catch(e){
+        return false;
+      }
+    }
+
+    async function handleAddClick(e){
+      if(!e.target.classList.contains('btn-add')) return;
+      const card = e.target.closest('.product-card');
+      if(!card) return;
+      const productId = card.dataset.id;
+      const name = card.dataset.name;
+      const price = parseFloat(card.dataset.price) || 0;
+      const image = card.dataset.image || '';
+      const color = (card.querySelector('.color-select') || {value: ''}).value;
+      const qtyInput = card.querySelector('.qty-input');
+      const quantity = Math.max(1, parseInt(qtyInput ? qtyInput.value : 1) || 1);
+
+      // Guardar localmente con color y cantidad
+      const cart = readLocalCart();
+      const existingIdx = cart.findIndex(i => i.productId === productId && i.color === color);
+      if(existingIdx > -1){
+        cart[existingIdx].quantity += quantity;
+      } else {
+        cart.push({ productId, name, price, image, color, quantity });
+      }
+      writeLocalCart(cart);
+
+      // Intentar guardar en servidor si hay token
+      const token = localStorage.getItem('authToken');
+      if(token){
+        const ok = await addToServerCart(token, productId, quantity);
+        // no hacemos rollback si falla; la copia local siempre mantiene color
+        if(!ok) console.warn('No se pudo guardar en backend, guardado solo localmente');
+      }
+
+      alert(`${name} (${color}) agregado al carrito x${quantity}`);
+    }
+
+    // Delegación de eventos
+    document.addEventListener('click', handleAddClick);
+
+    // Inicializar contador al cargar
+    document.addEventListener('DOMContentLoaded', updateCartCountUI);
+  })();
+</script>
+</body>
+</html>

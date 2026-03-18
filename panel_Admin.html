@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración - UrbanPlast</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #3E3E3E;
+            --secondary-color: #D9CBB8;
+            --accent-color: #4A7B3F;
+            --light-color: #E3E0DB;
+            --neutral-color: #D0CBC4;
+            --brown-color: #C9A885;
+            --text-color: #3E3E3E;
+            --text-light: #FFFFFF;
+            --error-color: #e74c3c;
+            --success-color: #27ae60;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--light-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 0;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background-color: var(--primary-color);
+            color: var(--text-light);
+            padding: 1rem 0;
+            margin-bottom: 30px;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--text-light);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo span {
+            color: var(--secondary-color);
+        }
+        
+        .logo i {
+            margin-right: 10px;
+        }
+        
+        .api-status {
+            display: flex;
+            align-items: center;
+            background-color: var(--accent-color);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+        
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            background-color: var(--success-color);
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: var(--primary-color);
+            font-size: 2.2rem;
+        }
+        
+        h2 {
+            color: var(--primary-color);
+            margin: 30px 0 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--secondary-color);
+        }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .card {
+            background: var(--text-light);
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat i {
+            font-size: 2.5rem;
+            color: var(--accent-color);
+            margin-bottom: 15px;
+        }
+        
+        .stat h3 {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+        
+        .stat p {
+            color: #666;
+        }
+        
+        .endpoints {
+            margin-bottom: 40px;
+        }
+        
+        .endpoint-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+        }
+        
+        .endpoint-item {
+            background-color: var(--text-light);
+            border-left: 4px solid var(--accent-color);
+            padding: 15px;
+            border-radius: 4px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+        }
+        
+        .endpoint-method {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 0.8rem;
+            margin-right: 10px;
+        }
+        
+        .method-get {
+            background-color: #61affe;
+            color: white;
+        }
+        
+        .method-post {
+            background-color: #49cc90;
+            color: white;
+        }
+        
+        .method-put {
+            background-color: #fca130;
+            color: white;
+        }
+        
+        .method-delete {
+            background-color: #f93e3e;
+            color: white;
+        }
+        
+        .endpoint-path {
+            font-family: monospace;
+            color: var(--primary-color);
+        }
+        
+        .products-management {
+            background-color: var(--text-light);
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 40px;
+        }
+        
+        .product-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--neutral-color);
+            border-radius: 5px;
+            font-size: 1rem;
+            background-color: var(--light-color);
+        }
+        
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .form-full-width {
+            grid-column: 1 / -1;
+        }
+        
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+        
+        .btn-primary {
+            background-color: var(--accent-color);
+            color: var(--text-light);
+        }
+        
+        .btn-primary:hover {
+            background-color: #3D6534;
+        }
+        
+        .btn-secondary {
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+        }
+        
+        .btn-secondary:hover {
+            background-color: #c9b7a0;
+        }
+        
+        .products-list {
+            margin-top: 30px;
+        }
+        
+        .product-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid var(--neutral-color);
+        }
+        
+        .product-item:last-child {
+            border-bottom: none;
+        }
+        
+        .product-image {
+            width: 80px;
+            height: 80px;
+            background-color: var(--light-color);
+            border-radius: 8px;
+            margin-right: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .product-info {
+            flex-grow: 1;
+        }
+        
+        .product-name {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+        
+        .product-price {
+            color: var(--accent-color);
+            font-weight: bold;
+        }
+        
+        .product-stock {
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+        
+        .product-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .action-btn {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        
+        .btn-edit {
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+        }
+        
+        .btn-delete {
+            background-color: var(--error-color);
+            color: white;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 5px;
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: opacity 0.3s, transform 0.3s;
+            z-index: 1000;
+        }
+        
+        .notification.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .notification.success {
+            background-color: var(--success-color);
+        }
+        
+        .notification.error {
+            background-color: var(--error-color);
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            font-size: 1.2rem;
+            color: var(--primary-color);
+        }
+        
+        .loading::after {
+            content: "";
+            animation: loading 1.5s infinite;
+        }
+        
+        @keyframes loading {
+            0% { content: "."; }
+            33% { content: ".."; }
+            66% { content: "..."; }
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .product-form {
+                grid-template-columns: 1fr;
+            }
+            
+            .product-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .product-image {
+                margin-right: 0;
+                margin-bottom: 15px;
+            }
+            
+            .product-actions {
+                margin-top: 15px;
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .action-btn {
+                flex-grow: 1;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <a href="#" class="logo">
+                <i class="fas fa-store"></i>
+                Urban<span>Plast</span>
+            </a>
+            <div class="api-status">
+                <div class="status-dot"></div>
+                <span>API Conectada: localhost:3000</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <h1>Panel de Administración</h1>
+        
+        <div class="dashboard">
+            <div class="card stat">
+                <i class="fas fa-box-open"></i>
+                <h3 id="products-count">0</h3>
+                <p>Productos en Inventario</p>
+            </div>
+            
+            <div class="card stat">
+                <i class="fas fa-shopping-cart"></i>
+                <h3 id="orders-count">0</h3>
+                <p>Pedidos Realizados</p>
+            </div>
+        </div>
+        
+        <div class="endpoints">
+            <h2>Endpoints de la API</h2>
+            <div class="endpoint-list">
+                <div class="endpoint-item">
+                    <span class="endpoint-method method-get">GET</span>
+                    <span class="endpoint-path">/api/products</span>
+                    <p>Obtener todos los productos</p>
+                </div>
+                
+                <div class="endpoint-item">
+                    <span class="endpoint-method method-post">POST</span>
+                    <span class="endpoint-path">/api/auth/register</span>
+                    <p>Registrar nuevo usuario</p>
+                </div>
+                
+                <div class="endpoint-item">
+                    <span class="endpoint-method method-post">POST</span>
+                    <span class="endpoint-path">/api/auth/login</span>
+                    <p>Iniciar sesión</p>
+                </div>
+                
+                <div class="endpoint-item">
+                    <span class="endpoint-method method-post">POST</span>
+                    <span class="endpoint-path">/api/contact</span>
+                    <p>Enviar mensaje de contacto</p>
+                </div>
+                
+                <div class="endpoint-item">
+                    <span class="endpoint-method method-get">GET</span>
+                    <span class="endpoint-path">/api/cart</span>
+                    <p>Obtener carrito de compras</p>
+                </div>
+                
+                <div class="endpoint-item">
+                    <span class="endpoint-method method-get">GET</span>
+                    <span class="endpoint-path">/api/orders</span>
+                    <p>Obtener pedidos</p>
+                </div>
+                
+                <div class="endpoint-item">
+                    <span class="endpoint-method method-get">GET</span>
+                    <span class="endpoint-path">/api/health</span>
+                    <p>Verificar estado del API</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="products-management">
+            <h2>Gestión de Productos</h2>
+            
+            <form id="productForm" class="product-form">
+                <div class="form-group">
+                    <label for="productName">Nombre del Producto</label>
+                    <input type="text" id="productName" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="productPrice">Precio ($)</label>
+                    <input type="number" id="productPrice" step="0.01" min="0" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="productStock">Stock</label>
+                    <input type="number" id="productStock" step="1" min="0" value="0" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="productCategory">Categoría</label>
+                    <select id="productCategory" required>
+                        <option value="">Seleccionar categoría</option>
+                        <option value="sillas">Sillas</option>
+                        <option value="mesas">Mesas</option>
+                        <option value="interior">Interior</option>
+                        <option value="exterior">Exterior</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="productImage">Imágenes (subir desde tu equipo) — puedes seleccionar varias</label>
+                    <input type="file" id="productImage" accept="image/*" multiple>
+                </div>
+
+                <div class="form-group">
+                    <label for="productColors">Colores (separados por comas)</label>
+                    <input type="text" id="productColors" placeholder="Ej: Blanco, Negro, Madera">
+                </div>
+                
+                <div class="form-group form-full-width">
+                    <label for="productDescription">Descripción</label>
+                    <textarea id="productDescription" required></textarea>
+                </div>
+                
+                <div class="form-full-width">
+                    <button type="submit" class="btn btn-primary">Agregar Producto</button>
+                    <button type="button" id="loadProducts" class="btn btn-secondary">Cargar Productos</button>
+                </div>
+            </form>
+            
+            <div class="products-list">
+                <h3>Inventario Actual</h3>
+                <div id="productsList" class="loading">Cargando productos</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="notification" class="notification"></div>
+
+    <script>
+        const API_BASE = 'http://localhost:3000/api';
+        const notification = document.getElementById('notification');
+        
+        // Función para mostrar notificaciones
+        function showNotification(message, type = 'success') {
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+        
+        // Nuevo: comprimir imagen usando canvas y devolver DataURL (base64)
+        async function compressFileToDataURL(file, maxWidth = 1600, maxHeight = 1600, quality = 0.8) {
+            if (!file) throw new Error('No file');
+            // Sólo imágenes
+            if (!file.type.startsWith('image/')) throw new Error('Tipo de archivo no soportado');
+
+            // Leer como DataURL para crear Image
+            const dataUrl = await new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+
+            // Crear image
+            const img = await new Promise((resolve, reject) => {
+                const image = new Image();
+                image.onload = () => resolve(image);
+                image.onerror = reject;
+                image.src = dataUrl;
+            });
+
+            // Calcular tamaño
+            let { width, height } = img;
+            let ratio = Math.min(1, maxWidth / width, maxHeight / height);
+            const canvas = document.createElement('canvas');
+            canvas.width = Math.round(width * ratio);
+            canvas.height = Math.round(height * ratio);
+            const ctx = canvas.getContext('2d');
+            // Dibujar y convertir
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+            // Elegir formato de salida (jpeg por compresión mejor)
+            const outputType = file.type === 'image/png' ? 'image/png' : 'image/jpeg';
+            const dataURL = canvas.toDataURL(outputType, quality);
+            return dataURL;
+        }
+
+        // Reemplaza filesToBase64 para comprimir antes de devolver base64
+        const MAX_FILE_BYTES = 20 * 1024 * 1024; // 20 MB por archivo (servidor)
+        const MAX_TOTAL_BYTES = 100 * 1024 * 1024; // 100 MB total por subida
+
+        async function filesToBase64(files) {
+            // validar tamaños brutos antes de procesar (si exceden, avisar)
+            let totalRaw = 0;
+            for (const f of files) {
+                totalRaw += f.size;
+            }
+            if (totalRaw > MAX_TOTAL_BYTES) {
+                throw new Error(`Tamaño total de archivos excede ${Math.round(MAX_TOTAL_BYTES/1024/1024)}MB`);
+            }
+
+            // Comprimir cada archivo y devolver DataURLs
+            const results = [];
+            for (const file of files) {
+                // si archivo ya pequeño, aún lo procesamos para normalizar
+                try {
+                    const dataUrl = await compressFileToDataURL(file, 1600, 1600, 0.8);
+                    // Validar tamaño final también
+                    const base64Length = dataUrl.split(',')[1].length * 3 / 4;
+                    if (base64Length > MAX_FILE_BYTES) {
+                        throw new Error(`"${file.name}" comprimido excede ${Math.round(MAX_FILE_BYTES/1024/1024)}MB`);
+                    }
+                    results.push(dataUrl);
+                } catch (err) {
+                    // Propagar con nombre de archivo para claridad
+                    throw new Error(`Error procesando "${file.name}": ${err.message}`);
+                }
+            }
+            return results;
+        }
+
+        // Ping al backend para verificar conectividad y CORS (mejorado)
+        async function pingApi(timeoutMs = 3000) {
+            try {
+                const controller = new AbortController();
+                const timeout = setTimeout(() => controller.abort(), timeoutMs);
+                const res = await fetch(`${API_BASE}/health`, { signal: controller.signal });
+                clearTimeout(timeout);
+                if (!res.ok) {
+                    console.warn('/api/health responded', res.status);
+                    return false;
+                }
+                return true;
+            } catch (err) {
+                console.error('pingApi error:', err);
+                return false;
+            }
+        }
+
+        // Agregar nuevo producto (usa la nueva filesToBase64)
+        async function addProduct(productData) {
+            try {
+                // Verificar API antes de procesar
+                const apiOk = await pingApi(5000);
+                if (!apiOk) {
+                    showNotification('No se puede contactar al servidor. Verifica que server.js esté corriendo y CORS permita tu origen.', 'error');
+                    return;
+                }
+
+                const fileInput = document.getElementById('productImage');
+                let imageBase64s = null;
+                if (fileInput.files && fileInput.files.length > 0) {
+                    try {
+                        showNotification('Comprimiendo imágenes...', 'success');
+                        imageBase64s = await filesToBase64(fileInput.files);
+                    } catch (validationErr) {
+                        showNotification(validationErr.message, 'error');
+                        return;
+                    }
+                }
+
+                const payload = {
+                    name: productData.name,
+                    price: productData.price,
+                    category: productData.category,
+                    description: productData.description || '',
+                    stock: productData.stock || 0
+                };
+                if (imageBase64s) payload.imageBase64s = imageBase64s;
+
+                const controller = new AbortController();
+                const timeout = setTimeout(() => controller.abort(), 60000); // 60s timeout
+
+                // Envío
+                let response;
+                try {
+                    response = await fetch(`${API_BASE}/products`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload),
+                        signal: controller.signal
+                    });
+                    clearTimeout(timeout);
+                } catch (networkErr) {
+                    clearTimeout(timeout);
+                    console.error('Network/fetch error:', networkErr);
+                    showNotification('Error de conexión al subir producto. Revisa la consola (posible CORS o servidor caído).', 'error');
+                    return;
+                }
+
+                // Leer respuesta (json o texto)
+                let data = null;
+                const ct = response.headers.get('content-type') || '';
+                try {
+                    if (ct.includes('application/json')) data = await response.json();
+                    else data = { raw: await response.text() };
+                } catch (parseErr) {
+                    console.warn('No se pudo parsear body:', parseErr);
+                    data = { raw: '(no body)' };
+                }
+
+                console.log('/api/products POST', response.status, data);
+
+                if (response.ok) {
+                    showNotification('Producto agregado correctamente', 'success');
+                    document.getElementById('productForm').reset();
+                    await loadProducts();
+                } else {
+                    // Mensaje específico para 413
+                    if (response.status === 413) {
+                        showNotification('Carga rechazada: alguna imagen excede el límite del servidor (413). Reduce la resolución o usa imágenes más pequeñas.', 'error');
+                    } else if (response.status >= 500) {
+                        showNotification('Error del servidor al procesar las imágenes. Verifica logs del servidor.', 'error');
+                    } else {
+                        const errMsg = (data && (data.error || data.raw)) ? (data.error || data.raw) : `Error al agregar producto (status ${response.status})`;
+                        showNotification(String(errMsg), 'error');
+                    }
+                    // Mostrar detalle en consola para debugging
+                    console.error('Upload failed:', response.status, data);
+                }
+            } catch (error) {
+                console.error('Unexpected error in addProduct:', error);
+                showNotification('Error inesperado. Revisa la consola.', 'error');
+            }
+        }
+
+        // Cargar productos desde la API (modificar para incluir botones de actualizar imágenes)
+        async function loadProducts() {
+            const productsList = document.getElementById('productsList');
+            productsList.innerHTML = '<div class="loading">Cargando productos</div>';
+            
+            try {
+                const response = await fetch(`${API_BASE}/products`);
+                
+                if (!response.ok) {
+                    throw new Error(`Error HTTP: ${response.status}`);
+                }
+                
+                const products = await response.json();
+                
+                // Actualizar contador
+                document.getElementById('products-count').textContent = products.length;
+                
+                if (products.length === 0) {
+                    productsList.innerHTML = '<p>No hay productos en el inventario.</p>';
+                    return;
+                }
+                
+                let productsHTML = '';
+                
+                products.forEach(product => {
+                    // mostrar hasta 3 miniaturas si existen en product.images
+                    const thumbs = (product.images && product.images.length) 
+                        ? product.images.slice(0,3).map(src => `<img src="${src}" style="width:48px;height:48px;object-fit:cover;border-radius:4px;margin-right:6px">`).join('') 
+                        : `<img src="${product.image || '/img/default.png'}" style="width:48px;height:48px;object-fit:cover;border-radius:4px">`;
+                    const colorTags = (product.colors && product.colors.length) 
+                        ? product.colors.map(c => `<span style="display:inline-block;background:#f0f0f0;padding:4px 8px;border-radius:12px;margin-right:6px;font-size:12px">${c}</span>`).join('')
+                        : '';
+                    productsHTML += `
+                        <div class="product-item" data-id="${product._id}">
+                            <div class="product-image">
+                                ${thumbs}
+                            </div>
+                            <div class="product-info">
+                                <div class="product-name">${product.name}</div>
+                                <div class="product-price">$${(product.price||0).toFixed(2)}</div>
+                                <div class="product-category">${product.category}</div>
+                                <div class="product-colors" style="margin-top:8px">${colorTags}</div>
+                            </div>
+                            <div class="product-actions">
+                                <button class="action-btn btn-edit" data-id="${product._id}">Editar</button>
+                                <button class="action-btn btn-delete" data-id="${product._id}">Eliminar</button>
+                                <button class="action-btn btn-images" data-id="${product._id}">Actualizar Imágenes</button>
+                                <input type="file" accept="image/*" multiple style="display:none" class="images-input" data-id="${product._id}">
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                productsList.innerHTML = productsHTML;
+                
+                // Añadir event listeners a los botones
+                document.querySelectorAll('.btn-delete').forEach(button => {
+                    button.addEventListener('click', () => {
+                        const productId = button.getAttribute('data-id');
+                        deleteProduct(productId);
+                    });
+                });
+
+                // Abrir selector de imágenes para actualizar
+                document.querySelectorAll('.btn-images').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const id = button.getAttribute('data-id');
+                        const input = document.querySelector(`.images-input[data-id="${id}"]`);
+                        if (input) input.click();
+                    });
+                });
+
+                // Manejar cambio en inputs ocultos -> enviar PUT para actualizar imágenes
+                document.querySelectorAll('.images-input').forEach(input => {
+                    input.addEventListener('change', async (e) => {
+                        const files = e.target.files;
+                        if (!files || files.length === 0) return;
+                        if (!confirm('¿Deseas subir estas imágenes y agregarlas al producto?')) return;
+
+                        const id = input.getAttribute('data-id');
+
+                        // 1) Verificar que el producto exista en el backend
+                        try {
+                            const checkRes = await fetch(`${API_BASE}/products/${encodeURIComponent(id)}`);
+                            if (!checkRes.ok) {
+                                showNotification(`Producto no encontrado en API (status ${checkRes.status}). Crea el producto primero.`, 'error');
+                                input.value = '';
+                                console.error('GET product failed', checkRes.status, await checkRes.text());
+                                return;
+                            }
+                        } catch (err) {
+                            console.error('Network error checking product existence:', err);
+                            showNotification('No se puede contactar al servidor (GET product). Revisa que server.js esté corriendo y CORS permita tu origen.', 'error');
+                            input.value = '';
+                            return;
+                        }
+
+                        // 2) Comprimir / convertir a base64
+                        let base64s;
+                        try {
+                            showNotification('Comprimiendo imágenes...', 'success');
+                            base64s = await filesToBase64(files);
+                        } catch (err) {
+                            showNotification(err.message, 'error');
+                            input.value = '';
+                            return;
+                        }
+
+                        // 3) Intentar PUT -> /api/products/:id/images (usar encodeURIComponent)
+                        try {
+                            const controller = new AbortController();
+                            const timeout = setTimeout(() => controller.abort(), 60000);
+                            let res;
+                            try {
+                                res = await fetch(`${API_BASE}/products/${encodeURIComponent(id)}/images`, {
+                                    method: 'PUT',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ imageBase64s: base64s, replace: false }),
+                                    signal: controller.signal
+                                });
+                                clearTimeout(timeout);
+                            } catch (networkErr) {
+                                clearTimeout(timeout);
+                                console.error('Network error on PUT images:', networkErr);
+                                showNotification('Error de conexión al subir imágenes (network). Revisa la consola.', 'error');
+                                input.value = '';
+                                return;
+                            }
+
+                            // leer body (json o texto) para diagnóstico
+                            let body = null;
+                            const ctype = res.headers.get('content-type') || '';
+                            if (ctype.includes('application/json')) body = await res.json();
+                            else body = { raw: await res.text() };
+
+                            if (res.ok) {
+                                showNotification('Imágenes subidas correctamente', 'success');
+                                loadProducts();
+                            } else {
+                                // diagnóstico para 404 y otros estados
+                                if (res.status === 404) {
+                                    showNotification('Ruta no encontrada en el servidor (PUT 404). Revisa server.js para asegurarte de que PUT /api/products/:id/images exista y reinicia el servidor.', 'error');
+                                    console.error('PUT 404 response body:', body);
+                                } else if (res.status === 413) {
+                                    showNotification('Al menos una imagen excede el límite del servidor (413). Reduce resolución.', 'error');
+                                    console.error('PUT 413 response body:', body);
+                                } else {
+                                    const msg = (body && (body.error || body.raw)) ? (body.error || body.raw) : `Error al subir imágenes (status ${res.status})`;
+                                    showNotification(String(msg), 'error');
+                                    console.error('PUT images failed:', res.status, body);
+                                }
+                            }
+                        } catch (err) {
+                            console.error('Error subiendo imágenes:', err);
+                            showNotification('Error de conexión al subir imágenes (revisa consola)', 'error');
+                        } finally {
+                            input.value = '';
+                        }
+                    });
+                });
+                
+            } catch (error) {
+                console.error('Error al cargar productos:', error);
+                productsList.innerHTML = '<p>Error al cargar los productos. Verifica que el API esté funcionando.</p>';
+                showNotification('Error al conectar con el API', 'error');
+            }
+        }
+
+        // Eliminar producto
+        async function deleteProduct(productId) {
+            if (!confirm('¿Estás seguro de que quieres eliminar este producto?')) {
+                return;
+            }
+            
+            try {
+                // En una implementación real, aquí harías una solicitud DELETE al API
+                // const response = await fetch(`${API_BASE}/products/${productId}`, {
+                //     method: 'DELETE'
+                // });
+                
+                // Simulamos una respuesta exitosa por ahora
+                showNotification('Producto eliminado correctamente');
+                
+                // Recargar la lista de productos
+                loadProducts();
+                
+            } catch (error) {
+                console.error('Error al eliminar producto:', error);
+                showNotification('Error al eliminar el producto', 'error');
+            }
+        }
+        
+        // Ping al backend para verificar conectividad y CORS
+        async function pingApi() {
+            try {
+                const controller = new AbortController();
+                const timeout = setTimeout(() => controller.abort(), 3000);
+                const res = await fetch(`${API_BASE}/health`, { signal: controller.signal });
+                clearTimeout(timeout);
+
+                if (res.ok) {
+                    console.log('API reachable:', await res.json());
+                    return true;
+                } else {
+                    console.error('/api/health responded with status', res.status);
+                    showNotification(`API respondió status ${res.status}`, 'error');
+                    return false;
+                }
+            } catch (err) {
+                if (err.name === 'AbortError') {
+                    console.error('Ping timed out');
+                    showNotification('Tiempo de conexión agotado al pingear API', 'error');
+                } else {
+                    console.error('Cannot reach API (network/CORS):', err);
+                    showNotification('No se puede conectar al API (ver consola).', 'error');
+                }
+                return false;
+            }
+        }
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Primero verificar API
+            const ok = await pingApi();
+            if (!ok) {
+                // No continuar si el backend no responde
+                document.getElementById('productsList').innerHTML = '<p>Error: no se puede conectar con el API. Abre el panel mediante http://localhost:3000/admin y revisa que server.js esté corriendo.</p>';
+                return;
+            }
+
+            // Cargar productos al iniciar
+            loadProducts();
+            
+            // Configurar el formulario
+            document.getElementById('productForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                const productData = {
+                    name: document.getElementById('productName').value,
+                    price: parseFloat(document.getElementById('productPrice').value),
+                    category: document.getElementById('productCategory').value,
+                    description: document.getElementById('productDescription').value,
+                    stock: parseInt(document.getElementById('productStock').value, 10) || 0,
+                    colors: document.getElementById('productColors').value // puede ser CSV
+                };
+                
+                addProduct(productData);
+            });
+            
+            // Botón para recargar productos
+            document.getElementById('loadProducts').addEventListener('click', loadProducts);
+            
+            // Simular algunos pedidos (en una app real, esto vendría del API)
+            document.getElementById('orders-count').textContent = Math.floor(Math.random() * 50) + 10;
+        });
+    </script>
+</body>
+</html>

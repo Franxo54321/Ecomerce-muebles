@@ -1,0 +1,139 @@
+/* Estilos específicos para la página de productos */
+.breadcrumb {
+    background-color: #f5f5f5;
+    padding: 15px 0;
+    font-size: 0.9rem;
+}
+
+.breadcrumb a {
+    color: #666;
+    text-decoration: none;
+}
+
+.breadcrumb span {
+    color: #e67e22;
+    font-weight: 500;
+}
+
+.products-page h1 {
+    font-size: 2rem;
+    margin-bottom: 30px;
+    color: #333;
+}
+
+.products-container {
+    display: flex;
+    gap: 30px;
+}
+
+.filters {
+    width: 250px;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    height: fit-content;
+}
+
+.filter-group {
+    margin-bottom: 25px;
+}
+
+.filter-group h4 {
+    font-size: 1rem;
+    margin-bottom: 15px;
+    color: #333;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 5px;
+}
+
+.filter-group ul {
+    list-style: none;
+}
+
+.filter-group li {
+    margin-bottom: 8px;
+}
+
+.filter-group a {
+    color: #666;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.3s;
+}
+
+.filter-group a:hover {
+    color: #e67e22;
+}
+
+.products-list {
+    flex: 1;
+}
+
+.sort-options {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin-bottom: 20px;
+}
+
+.sort-options span {
+    margin-right: 10px;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.sort-options select {
+    padding: 8px 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #fff;
+    cursor: pointer;
+}
+
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 40px;
+}
+
+.pagination a {
+    color: #333;
+    padding: 8px 16px;
+    text-decoration: none;
+    border: 1px solid #ddd;
+    margin: 0 4px;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.pagination a.active {
+    background-color: #e67e22;
+    color: white;
+    border: 1px solid #e67e22;
+}
+
+.pagination a:hover:not(.active) {
+    background-color: #ddd;
+}
+
+@media (max-width: 768px) {
+    .products-container {
+        flex-direction: column;
+    }
+    
+    .filters {
+        width: 100%;
+        margin-bottom: 30px;
+    }
+    
+    .products-grid {
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    }
+}

@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagnóstico API UrbanPlast</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #3E3E3E;
+            --secondary-color: #D9CBB8;
+            --accent-color: #4A7B3F;
+            --light-color: #E3E0DB;
+            --error-color: #e74c3c;
+            --success-color: #27ae60;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--light-color);
+            color: var(--primary-color);
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+        
+        h2 {
+            color: var(--primary-color);
+            margin: 30px 0 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--secondary-color);
+        }
+        
+        .status-card {
+            display: flex;
+            align-items: center;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            background-color: #f8f9fa;
+        }
+        
+        .status-icon {
+            font-size: 2rem;
+            margin-right: 20px;
+        }
+        
+        .status-error {
+            color: var(--error-color);
+        }
+        
+        .status-success {
+            color: var(--success-color);
+        }
+        
+        .solution-steps {
+            background-color: #f1f8e9;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .step {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: flex-start;
+        }
+        
+        .step-number {
+            background-color: var(--accent-color);
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+        
+        .code-block {
+            background-color: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 15px 0;
+            font-family: monospace;
+        }
+        
+        .endpoint-test {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        
+        .btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-right: 10px;
+            margin-top: 10px;
+        }
+        
+        .btn-primary {
+            background-color: var(--accent-color);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background-color: var(--secondary-color);
+            color: var(--primary-color);
+        }
+        
+        .test-result {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 5px;
+            display: none;
+        }
+        
+        .success {
+            background-color: #e8f5e9;
+            border-left: 4px solid var(--success-color);
+        }
+        
+        .error {
+            background-color: #ffebee;
+            border-left: 4px solid var(--error-color);
+        }
+        
+        .response-details {
+            margin-top: 10px;
+        }
+        
+        .response-details pre {
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        
+        .note {
+            background-color: #fff8e1;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #ffd54f;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><i class="fas fa-bug"></i> Diagnóstico de Problema de API</h1>
+        <p>Estás recibiendo un error 404 en la ruta <code>/api/register</code>. Esto significa que el endpoint no existe o no está correctamente configurado.</p>
+        
+        <div class="status-card">
+            <i class="fas fa-exclamation-triangle status-icon status-error"></i>
+            <div>
+                <h2>Problema Detectado</h2>
+                <p><strong>Endpoint:</strong> <code>POST https://localhost:3000/api/register</code></p>
+                <p><strong>Error:</strong> <code>404 Not Found</code></p>
+                <p><strong>Causa probable:</strong> La ruta no está definida en tu servidor Express.js</p>
+            </div>
+        </div>
+        
+        <h2>Solución</h2>
+        <div class="solution-steps">
+            <div class="step">
+                <div class="step-number">1</div>
+                <div>
+                    <p><strong>Verifica tu archivo de rutas</strong></p>
+                    <p>Asegúrate de tener un archivo de rutas para el registro de usuarios.</p>
+                </div>
+            </div>
+            
+            <div class="step">
+                <div class="step-number">2</div>
+                <div>
+                    <p><strong>Configuración correcta en server.js</strong></p>
+                    <p>Tu archivo principal debe importar y usar las rutas de autenticación:</p>
+                    <div class="code-block">
+// server.js o app.js
+const express = require('express');
+const app = express();
+const authRoutes = require('./routes/auth'); // Asegúrate de que esta ruta es correcta
+
+// Middlewares
+app.use(express.json());
+
+// Rutas
+app.use('/api/auth', authRoutes); // Deberías usar /api/auth, no /api directamente
+
+// ... resto de la configuración
+                    </div>
+                </div>
+            </div>
+            
+            <div class="step">
+                <div class="step-number">3</div>
+                <div>
+                    <p><strong>Estructura de archivo de rutas</strong></p>
+                    <p>Tu archivo de rutas de autenticación debe verse así:</p>
+                    <div class="code-block">
+// routes/auth.js
+const express = require('express');
+const router = express.Router();
+
+// POST /api/auth/register
+router.post('/register', async (req, res) => {
+    try {
+        // Lógica de registro aquí
+        const { name, email, password } = req.body;
+        
+        // Validaciones
+        if (!name || !email || !password) {
+            return res.status(400).json({ error: 'Todos los campos son requeridos' });
+        }
+        
+        // Verificar si el usuario ya existe
+        // ... código para verificar en la base de datos
+        
+        // Crear nuevo usuario
+        // ... código para crear usuario
+        
+        // Devolver respuesta exitosa
+        res.status(201).json({ 
+            message: 'Usuario registrado exitosamente',
+            user: { id: newUser.id, name: newUser.name, email: newUser.email },
+            token: 'jwt-token-generado-aqui'
+        });
+    } catch (error) {
+        console.error('Error en registro:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
+});
+
+module.exports = router;
+                    </div>
+                </div>
+            </div>
+            
+            <div class="step">
+                <div class="step-number">4</div>
+                <div>
+                    <p><strong>Actualiza tu frontend</strong></p>
+                    <p>Cambia la URL en tu JavaScript de:</p>
+                    <div class="code-block">
+const API_BASE = 'http://localhost:3000/api';
+// ...
+await fetch(`${API_BASE}/register`, { ... });
+                    </div>
+                    <p>a:</p>
+                    <div class="code-block">
+const API_BASE = 'http://localhost:3000/api/auth';
+// ...
+await fetch(`${API_BASE}/register`, { ... });
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <h2>Probar Endpoints</h2>
+        <div class="endpoint-test">
+            <p>Prueba si los endpoints están correctamente configurados:</p>
+            
+            <button class="btn btn-primary" onclick="testEndpoint('/api/register', 'POST')">
+                Probar /api/register
+            </button>
+            
+            <button class="btn btn-primary" onclick="testEndpoint('/api/auth/register', 'POST')">
+                Probar /api/auth/register
+            </button>
+            
+            <button class="btn btn-secondary" onclick="testEndpoint('/api/products', 'GET')">
+                Probar /api/products
+            </button>
+            
+            <button class="btn btn-secondary" onclick="testEndpoint('/api/health', 'GET')">
+                Probar /api/health
+            </button>
+            
+            <div id="testResult" class="test-result"></div>
+        </div>
+        
+        <div class="note">
+            <p><strong>Nota:</strong> Asegúrate de que tu servidor esté ejecutándose en <code>localhost:3000</code> antes de realizar las pruebas.</p>
+        </div>
+        
+        <h2>Posibles Causas del Error 404</h2>
+        <ul>
+            <li>La ruta no está definida en tu servidor</li>
+            <li>Estás usando la URL incorrecta en el frontend</li>
+            <li>El middleware de Express no está configurado correctamente</li>
+            <li>Hay un error de sintaxis en tu archivo de rutas</li>
+            <li>El servidor no se está ejecutando o se reinició</li>
+        </ul>
+    </div>
+
+    <script>
+        async function testEndpoint(endpoint, method) {
+            const testResult = document.getElementById('testResult');
+            testResult.style.display = 'block';
+            testResult.className = 'test-result';
+            testResult.innerHTML = `<p>Probando ${method} ${endpoint}...</p>`;
+            
+            try {
+                const response = await fetch(`http://localhost:3000${endpoint}`, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    // Para endpoints POST, envía un cuerpo vacío o de prueba
+                    body: method === 'POST' ? JSON.stringify({
+                        name: 'test',
+                        email: 'test@example.com',
+                        password: 'password123'
+                    }) : undefined
+                });
+                
+                let details = `<p><strong>Status:</strong> ${response.status} ${response.statusText}</p>`;
+                
+                if (response.headers) {
+                    details += `<p><strong>Content-Type:</strong> ${response.headers.get('content-type')}</p>`;
+                }
+                
+                if (response.status !== 404) {
+                    try {
+                        const data = await response.json();
+                        details += `<div class="response-details"><pre>${JSON.stringify(data, null, 2)}</pre></div>`;
+                    } catch (e) {
+                        const text = await response.text();
+                        details += `<div class="response-details"><pre>${text}</pre></div>`;
+                    }
+                }
+                
+                if (response.ok) {
+                    testResult.classList.add('success');
+                    testResult.innerHTML = `<p><i class="fas fa-check-circle"></i> <strong>ÉXITO:</strong> ${method} ${endpoint} responde correctamente</p>${details}`;
+                } else {
+                    testResult.classList.add('error');
+                    testResult.innerHTML = `<p><i class="fas fa-exclamation-circle"></i> <strong>ERROR:</strong> ${method} ${endpoint} devuelve ${response.status}</p>${details}`;
+                }
+            } catch (error) {
+                testResult.classList.add('error');
+                testResult.innerHTML = `<p><i class="fas fa-exclamation-circle"></i> <strong>ERROR DE CONEXIÓN:</strong> No se pudo conectar al endpoint ${endpoint}</p>
+                                       <p>${error.message}</p>
+                                       <p>Asegúrate de que el servidor esté ejecutándose en el puerto 3000.</p>`;
+            }
+        }
+    </script>
+</body>
+</html>

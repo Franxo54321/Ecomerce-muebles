@@ -1,0 +1,30 @@
+# Dependencias
+node_modules/
+
+# Variables de entorno (NUNCA subir al repositorio)
+.env
+enviroment.env
+
+# Imágenes (no subir al repositorio)
+img/uploads/*
+!img/uploads/.gitkeep
+img/upscaled/*
+img/upscaled_none/*
+img/*.png
+img/*.jpg
+img/*.jpeg
+img/*.webp
+img/*.gif
+
+# Logs
+*.log
+npm-debug.log*
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+*.swp
+*.swo
