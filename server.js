@@ -441,6 +441,43 @@ app.post('/api/products', productPostMiddleware, async (req, res) => {
   }
 });
 
+// DELETE /api/products/:id — Eliminar producto
+app.delete('/api/products/:id', async (req, res) => {
+  try {
+    const product = await Product.findByIdAndDelete(req.params.id);
+    if (!product) return res.status(404).json({ error: 'Producto no encontrado' });
+    res.json({ success: true, message: 'Producto eliminado' });
+  } catch (err) {
+    console.error('Error eliminando producto:', err);
+    res.status(500).json({ error: 'Error al eliminar el producto', details: err.message });
+  }
+});
+
+// PUT /api/products/:id — Editar producto (datos generales)
+app.put('/api/products/:id', async (req, res) => {
+  try {
+    const { name, price, category, description, stock, colors } = req.body;
+    const product = await Product.findById(req.params.id);
+    if (!product) return res.status(404).json({ error: 'Producto no encontrado' });
+
+    if (name !== undefined) product.name = name;
+    if (price !== undefined) product.price = parseFloat(price);
+    if (category !== undefined) product.category = category;
+    if (description !== undefined) product.description = description;
+    if (stock !== undefined) product.stock = parseInt(stock, 10);
+    if (colors !== undefined) {
+      if (Array.isArray(colors)) product.colors = colors.map(c => String(c).trim()).filter(Boolean);
+      else if (typeof colors === 'string') product.colors = colors.split(',').map(s => s.trim()).filter(Boolean);
+    }
+
+    await product.save();
+    res.json({ success: true, product });
+  } catch (err) {
+    console.error('Error editando producto:', err);
+    res.status(500).json({ error: 'Error al editar el producto', details: err.message });
+  }
+});
+
 // Rutas de autenticación
 // PASO 1: Registrar → guarda pendiente y envía código al email
 app.post('/api/register', async (req, res) => {

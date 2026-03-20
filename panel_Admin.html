@@ -420,13 +420,18 @@
 <body>
     <header>
         <div class="header-content">
-            <a href="#" class="logo">
+            <a href="/" class="logo">
                 <i class="fas fa-store"></i>
                 Urban<span>Plast</span>
             </a>
-            <div class="api-status">
-                <div class="status-dot"></div>
-                <span>API Conectada</span>
+            <div style="display:flex;gap:12px;align-items:center;">
+                <a href="/" class="btn btn-secondary" style="text-decoration:none;font-size:0.9rem;padding:8px 16px;display:flex;align-items:center;gap:6px;">
+                    <i class="fas fa-arrow-left"></i> Volver a la tienda
+                </a>
+                <div class="api-status">
+                    <div class="status-dot"></div>
+                    <span>API Conectada</span>
+                </div>
             </div>
         </div>
     </header>
@@ -802,11 +807,19 @@
                 
                 productsList.innerHTML = productsHTML;
                 
-                // Añadir event listeners a los botones
+                // Añadir event listeners a los botones de eliminar
                 document.querySelectorAll('.btn-delete').forEach(button => {
                     button.addEventListener('click', () => {
                         const productId = button.getAttribute('data-id');
                         deleteProduct(productId);
+                    });
+                });
+
+                // Añadir event listeners a los botones de editar
+                document.querySelectorAll('.btn-edit').forEach(button => {
+                    button.addEventListener('click', () => {
+                        const productId = button.getAttribute('data-id');
+                        editProduct(productId);
                     });
                 });
 
@@ -922,20 +935,122 @@
             }
             
             try {
-                // En una implementación real, aquí harías una solicitud DELETE al API
-                // const response = await fetch(`${API_BASE}/products/${productId}`, {
-                //     method: 'DELETE'
-                // });
-                
-                // Simulamos una respuesta exitosa por ahora
-                showNotification('Producto eliminado correctamente');
-                
-                // Recargar la lista de productos
-                loadProducts();
-                
+                const response = await fetch(`${API_BASE}/products/${productId}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    showNotification('Producto eliminado correctamente');
+                    loadProducts();
+                } else {
+                    const data = await response.json().catch(() => ({}));
+                    showNotification(data.error || 'Error al eliminar el producto', 'error');
+                }
             } catch (error) {
                 console.error('Error al eliminar producto:', error);
                 showNotification('Error al eliminar el producto', 'error');
+            }
+        }
+
+        // Editar producto — abre prompt con datos actuales
+        async function editProduct(productId) {
+            try {
+                const res = await fetch(`${API_BASE}/products/${productId}`);
+                if (!res.ok) { showNotification('No se pudo cargar el producto', 'error'); return; }
+                const product = await res.json();
+
+                // Rellenar el formulario con los datos del producto
+                document.getElementById('productName').value = product.name || '';
+                document.getElementById('productPrice').value = product.price || '';
+                document.getElementById('productStock').value = product.stock || 0;
+                document.getElementById('productCategory').value = product.category || '';
+                document.getElementById('productDescription').value = product.description || '';
+                document.getElementById('productColors').value = (product.colors || []).join(', ');
+
+                // Cambiar el botón de submit para que actualice en vez de crear
+                const submitBtn = document.querySelector('#productForm .btn-primary');
+                const originalText = submitBtn.textContent;
+                submitBtn.textContent = 'Actualizar Producto';
+                submitBtn.dataset.editId = productId;
+
+                // Agregar botón cancelar si no existe
+                let cancelBtn = document.getElementById('cancelEditBtn');
+                if (!cancelBtn) {
+                    cancelBtn = document.createElement('button');
+                    cancelBtn.type = 'button';
+                    cancelBtn.id = 'cancelEditBtn';
+                    cancelBtn.className = 'btn btn-secondary';
+                    cancelBtn.style.marginLeft = '10px';
+                    cancelBtn.textContent = 'Cancelar edición';
+                    submitBtn.parentNode.appendChild(cancelBtn);
+                }
+                cancelBtn.style.display = 'inline-block';
+                cancelBtn.onclick = () => {
+                    document.getElementById('productForm').reset();
+                    submitBtn.textContent = 'Agregar Producto';
+                    delete submitBtn.dataset.editId;
+                    cancelBtn.style.display = 'none';
+                };
+
+                // Scroll al formulario
+                document.getElementById('productForm').scrollIntoView({ behavior: 'smooth' });
+                showNotification('Editando: ' + product.name + '. Modifica y presiona "Actualizar Producto".', 'success');
+            } catch (err) {
+                console.error('Error cargando producto para editar:', err);
+                showNotification('Error al cargar producto', 'error');
+            }
+        }
+
+        // Actualizar producto existente
+        async function updateProduct(productId, productData) {
+            try {
+                const payload = {
+                    name: productData.name,
+                    price: productData.price,
+                    category: productData.category,
+                    description: productData.description || '',
+                    stock: productData.stock || 0,
+                    colors: productData.colors || ''
+                };
+
+                const response = await fetch(`${API_BASE}/products/${productId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json().catch(() => ({}));
+
+                if (response.ok) {
+                    showNotification('Producto actualizado correctamente', 'success');
+
+                    // Si hay nuevas imágenes, subirlas
+                    const fileInput = document.getElementById('productImage');
+                    if (fileInput.files && fileInput.files.length > 0) {
+                        showNotification('Subiendo imágenes...', 'success');
+                        const base64s = await filesToBase64(fileInput.files);
+                        await fetch(`${API_BASE}/products/${productId}/images`, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ imageBase64s: base64s, replace: false })
+                        });
+                    }
+
+                    // Restaurar formulario
+                    document.getElementById('productForm').reset();
+                    const submitBtn = document.querySelector('#productForm .btn-primary');
+                    submitBtn.textContent = 'Agregar Producto';
+                    delete submitBtn.dataset.editId;
+                    const cancelBtn = document.getElementById('cancelEditBtn');
+                    if (cancelBtn) cancelBtn.style.display = 'none';
+
+                    await loadProducts();
+                } else {
+                    showNotification(data.error || 'Error al actualizar', 'error');
+                }
+            } catch (error) {
+                console.error('Error actualizando producto:', error);
+                showNotification('Error al actualizar el producto', 'error');
             }
         }
         
@@ -980,7 +1095,7 @@
             // Cargar productos al iniciar
             loadProducts();
             
-            // Configurar el formulario
+            // Configurar el formulario (crear o editar)
             document.getElementById('productForm').addEventListener('submit', (e) => {
                 e.preventDefault();
                 
@@ -990,10 +1105,17 @@
                     category: document.getElementById('productCategory').value,
                     description: document.getElementById('productDescription').value,
                     stock: parseInt(document.getElementById('productStock').value, 10) || 0,
-                    colors: document.getElementById('productColors').value // puede ser CSV
+                    colors: document.getElementById('productColors').value
                 };
+
+                const submitBtn = document.querySelector('#productForm .btn-primary');
+                const editId = submitBtn.dataset.editId;
                 
-                addProduct(productData);
+                if (editId) {
+                    updateProduct(editId, productData);
+                } else {
+                    addProduct(productData);
+                }
             });
             
             // Botón para recargar productos

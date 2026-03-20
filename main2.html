@@ -191,7 +191,7 @@
 
     <!-- Cart Modal -->
     <div class="modal" id="cartModal">
-        <div class="modal-content">
+        <div class="modal-content" style="max-width:560px;">
             <span class="close-modal" onclick="closeModal('cartModal')">&times;</span>
             <h2 class="modal-title">Tu Carrito de Compras</h2>
             <div class="cart-items" id="cartItems">
@@ -199,39 +199,103 @@
             </div>
             <div class="cart-total" id="cartTotal">Total: $0.00</div>
             <div id="checkout-section">
-                <button class="btn" onclick="showCheckoutForm()">Finalizar Compra</button>
+                <button class="btn" onclick="showCheckoutForm()" style="width:100%;padding:14px;font-size:16px;">Finalizar Compra</button>
             </div>
             <div id="checkout-form" class="checkout-form" style="display: none;">
-                <h3>Información de Envío</h3>
-                <form id="shippingForm">
-                    <div class="form-group">
-                        <label for="shippingStreet">Dirección</label>
-                        <input type="text" id="shippingStreet" required>
+                <!-- Pasos del checkout -->
+                <div id="checkout-steps" style="display:flex;justify-content:center;gap:8px;margin-bottom:20px;">
+                    <div class="step-indicator active" data-step="1">
+                        <span class="step-num">1</span> <span class="step-label">Envío</span>
                     </div>
-                    <div class="form-group">
-                        <label for="shippingCity">Ciudad</label>
-                        <input type="text" id="shippingCity" required>
+                    <div class="step-divider">—</div>
+                    <div class="step-indicator" data-step="2">
+                        <span class="step-num">2</span> <span class="step-label">Resumen</span>
                     </div>
-                    <div class="form-group">
-                        <label for="shippingState">Estado/Provincia</label>
-                        <input type="text" id="shippingState" required>
+                    <div class="step-divider">—</div>
+                    <div class="step-indicator" data-step="3">
+                        <span class="step-num">3</span> <span class="step-label">Pago</span>
                     </div>
-                    <div class="form-group">
-                        <label for="shippingZip">Código Postal</label>
-                        <input type="text" id="shippingZip" required>
+                </div>
+
+                <!-- Paso 1: Dirección de envío -->
+                <div id="step1" class="checkout-step">
+                    <h3 style="margin-bottom:12px;">📦 Dirección de Envío</h3>
+                    <form id="shippingForm">
+                        <div class="form-group">
+                            <label for="shippingStreet">Dirección</label>
+                            <input type="text" id="shippingStreet" placeholder="Ej: Av. San Martín 1234" required>
+                        </div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                            <div class="form-group">
+                                <label for="shippingCity">Ciudad</label>
+                                <input type="text" id="shippingCity" placeholder="Buenos Aires" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="shippingState">Provincia</label>
+                                <input type="text" id="shippingState" placeholder="CABA" required>
+                            </div>
+                        </div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                            <div class="form-group">
+                                <label for="shippingZip">Código Postal</label>
+                                <input type="text" id="shippingZip" placeholder="1000" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="shippingCountry">País</label>
+                                <input type="text" id="shippingCountry" value="Argentina" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn" style="width:100%;padding:14px;font-size:16px;">Continuar al resumen →</button>
+                    </form>
+                </div>
+
+                <!-- Paso 2: Resumen de la orden -->
+                <div id="step2" class="checkout-step" style="display:none;">
+                    <h3 style="margin-bottom:12px;">📋 Resumen de tu Orden</h3>
+                    <div id="orderSummaryItems" style="max-height:200px;overflow:auto;margin-bottom:12px;"></div>
+                    <div style="background:#f4f6f8;padding:12px;border-radius:8px;margin-bottom:12px;">
+                        <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+                            <span>Subtotal:</span><span id="summarySubtotal">$0.00</span>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+                            <span>Envío:</span><span style="color:#27ae60;font-weight:600;">Gratis</span>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;font-size:18px;font-weight:700;border-top:1px solid #ddd;padding-top:8px;">
+                            <span>Total:</span><span id="summaryTotal">$0.00</span>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="shippingCountry">País</label>
-                        <input type="text" id="shippingCountry" required>
+                    <div id="summaryAddress" style="font-size:13px;color:#666;margin-bottom:16px;"></div>
+                    <div style="display:flex;gap:10px;">
+                        <button class="btn" onclick="goToStep(1)" style="flex:1;padding:12px;background:#666;">← Volver</button>
+                        <button class="btn" onclick="goToStep(3)" style="flex:2;padding:12px;font-size:16px;">Proceder al pago →</button>
                     </div>
-                    <div class="form-group">
-                        <label for="paymentMethod">Método de Pago</label>
-                        <select id="paymentMethod" required>
-                            <option value="mercadopago">MercadoPago (Tarjeta / Transferencia)</option>
-                        </select>
+                </div>
+
+                <!-- Paso 3: Método de pago -->
+                <div id="step3" class="checkout-step" style="display:none;">
+                    <h3 style="margin-bottom:12px;">💳 Método de Pago</h3>
+                    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px;">
+                        <label class="payment-option selected" onclick="selectPaymentOption(this, 'mercadopago')">
+                            <input type="radio" name="paymentOpt" value="mercadopago" checked style="display:none;">
+                            <div style="display:flex;align-items:center;gap:12px;">
+                                <span style="font-size:28px;">💳</span>
+                                <div>
+                                    <div style="font-weight:700;">MercadoPago</div>
+                                    <div style="font-size:13px;color:#666;">Tarjeta de crédito/débito, transferencia bancaria, efectivo</div>
+                                </div>
+                            </div>
+                        </label>
                     </div>
-                    <button type="submit" class="btn">Pagar Ahora</button>
-                </form>
+                    <div style="background:#e8f5e9;padding:12px;border-radius:8px;margin-bottom:16px;font-size:13px;color:#2e7d32;">
+                        🔒 Pago seguro procesado por MercadoPago. Tus datos están protegidos.
+                    </div>
+                    <div style="display:flex;gap:10px;">
+                        <button class="btn" onclick="goToStep(2)" style="flex:1;padding:12px;background:#666;">← Volver</button>
+                        <button class="btn" id="payNowBtn" onclick="processPayment()" style="flex:2;padding:14px;font-size:16px;background:#009ee3;">
+                            🔗 Pagar con MercadoPago
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -385,6 +449,71 @@
         function showCheckoutForm() {
             document.getElementById('checkout-section').style.display = 'none';
             document.getElementById('checkout-form').style.display = 'block';
+            goToStep(1);
+        }
+
+        function goToStep(stepNum) {
+            // Ocultar todos los pasos
+            document.querySelectorAll('.checkout-step').forEach(s => s.style.display = 'none');
+            // Mostrar el paso solicitado
+            document.getElementById('step' + stepNum).style.display = 'block';
+            // Actualizar indicadores
+            document.querySelectorAll('.step-indicator').forEach(ind => {
+                const s = parseInt(ind.dataset.step);
+                ind.classList.toggle('active', s === stepNum);
+                ind.classList.toggle('done', s < stepNum);
+            });
+            // Si es paso 2, rellenar resumen
+            if (stepNum === 2) fillOrderSummary();
+        }
+
+        function fillOrderSummary() {
+            const itemsEl = document.getElementById('orderSummaryItems');
+            const cartItems = document.querySelectorAll('#cartItems .cart-item');
+            // Re-obtener carrito del display
+            itemsEl.innerHTML = '';
+            let total = 0;
+            cartItems.forEach(item => {
+                const name = item.querySelector('.cart-item-name')?.textContent || 'Producto';
+                const priceText = item.querySelector('.cart-item-total')?.textContent || '$0';
+                itemsEl.innerHTML += `<div style="display:flex;justify-content:space-between;padding:4px 0;font-size:14px;border-bottom:1px solid #eee;"><span>${name}</span><span>${priceText}</span></div>`;
+            });
+            // Total from cartTotal
+            const totalText = document.getElementById('cartTotal').textContent;
+            document.getElementById('summarySubtotal').textContent = totalText.replace('Total: ', '');
+            document.getElementById('summaryTotal').textContent = totalText.replace('Total: ', '');
+            // Dirección
+            const street = document.getElementById('shippingStreet').value;
+            const city = document.getElementById('shippingCity').value;
+            const state = document.getElementById('shippingState').value;
+            const zip = document.getElementById('shippingZip').value;
+            const country = document.getElementById('shippingCountry').value;
+            document.getElementById('summaryAddress').innerHTML = `<strong>Envío a:</strong> ${street}, ${city}, ${state} ${zip}, ${country}`;
+        }
+
+        function selectPaymentOption(label, value) {
+            document.querySelectorAll('.payment-option').forEach(l => l.classList.remove('selected'));
+            label.classList.add('selected');
+        }
+
+        async function processPayment() {
+            const btn = document.getElementById('payNowBtn');
+            btn.disabled = true;
+            btn.innerHTML = '⏳ Procesando...';
+
+            const shippingInfo = {
+                street: document.getElementById('shippingStreet').value,
+                city: document.getElementById('shippingCity').value,
+                state: document.getElementById('shippingState').value,
+                zipCode: document.getElementById('shippingZip').value,
+                country: document.getElementById('shippingCountry').value
+            };
+
+            await checkout(shippingInfo, 'mercadopago');
+
+            // Si no redirigió, restaurar botón
+            btn.disabled = false;
+            btn.innerHTML = '🔗 Pagar con MercadoPago';
         }
 
         // Funciones de productos
@@ -407,6 +536,18 @@ const styleTag = document.createElement('style');
 styleTag.textContent = `
 .product-title a { color: inherit; text-decoration: none; cursor: pointer; }
 .product-title a:hover { color: #3498db; text-decoration: underline; }
+.step-indicator { display:flex; align-items:center; gap:4px; font-size:13px; color:#999; transition:all .3s; }
+.step-indicator .step-num { width:24px; height:24px; border-radius:50%; background:#ddd; color:#999; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; transition:all .3s; }
+.step-indicator.active .step-num { background:#4A7B3F; color:#fff; }
+.step-indicator.active { color:#4A7B3F; font-weight:600; }
+.step-indicator.done .step-num { background:#27ae60; color:#fff; }
+.step-indicator.done { color:#27ae60; }
+.step-divider { color:#ccc; font-size:12px; display:flex; align-items:center; }
+.payment-option { display:block; border:2px solid #e0e0e0; border-radius:10px; padding:14px; cursor:pointer; transition:all .2s; }
+.payment-option:hover { border-color:#aaa; }
+.payment-option.selected { border-color:#009ee3; background:#f0f9ff; }
+.cart-item-name { font-weight:600; }
+.cart-item-total { font-weight:700; }
 `;
 document.head.appendChild(styleTag);
 
@@ -526,11 +667,11 @@ document.head.appendChild(styleTag);
                         cartItem.className = 'cart-item';
                         cartItem.innerHTML = `
                             <div>
-                                <h4>${item.name}</h4>
+                                <h4 class="cart-item-name">${item.name}</h4>
                                 <p>$${item.price.toFixed(2)} x ${item.quantity}</p>
                             </div>
                             <div>
-                                <p>$${itemTotal.toFixed(2)}</p>
+                                <p class="cart-item-total">$${itemTotal.toFixed(2)}</p>
                                 <button onclick="removeFromCart('${item.productId}')">Eliminar</button>
                             </div>
                         `;
@@ -667,18 +808,10 @@ document.head.appendChild(styleTag);
                 await register(name, email, password);
             });
 
-            // Formulario de envío
+            // Formulario de envío - avanza al paso 2 (resumen)
             document.getElementById('shippingForm').addEventListener('submit', async (e) => {
                 e.preventDefault();
-                const shippingInfo = {
-                    street: document.getElementById('shippingStreet').value,
-                    city: document.getElementById('shippingCity').value,
-                    state: document.getElementById('shippingState').value,
-                    zipCode: document.getElementById('shippingZip').value,
-                    country: document.getElementById('shippingCountry').value
-                };
-                const paymentMethod = document.getElementById('paymentMethod').value;
-                await checkout(shippingInfo, paymentMethod);
+                goToStep(2);
             });
         }
 

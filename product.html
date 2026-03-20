@@ -4,141 +4,215 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Producto - UrbanPlast</title>
-  <!-- Añadir import del CSS global para usar la misma paleta que main2.html -->
   <link rel="stylesheet" href="css/main2.css">
   <style>
-    :root{
-      --accent:#f0c38c; /* botón color */
-      --accent-dark:#e0ad63;
-      --primary:#222;
-      --muted:#666;
-      --bg:#fff;
-      --page-bg:#f7f7f7;
-    }
-    html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;color:var(--primary);background:var(--page-bg)}
-    .wrap{max-width:1200px;margin:28px auto;padding:0 20px}
-    .breadcrumbs{font-size:13px;color:var(--muted);margin-bottom:18px}
-    .product-grid{display:grid;grid-template-columns:80px 1fr 360px;gap:24px;align-items:start;background:transparent}
-    /* thumbnails */
-    .thumbs{display:flex;flex-direction:column;gap:12px}
-    .thumb{width:72px;height:72px;border:1px solid #e6e6e6;border-radius:6px;overflow:hidden;cursor:pointer;display:flex;align-items:center;justify-content:center;background:#fafafa}
-    .thumb img{width:100%;height:100%;object-fit:cover;display:block}
-    .thumb.active{outline:2px solid #ddd}
-    /* main image */
-    .main-media{display:flex;flex-direction:column;align-items:center;justify-content:center}
-    .main-media .main-img-wrap{width:100%;max-width:640px;background:#fff;border-radius:8px;overflow:hidden;border:1px solid #eee;display:flex;align-items:center;justify-content:center}
-    .main-media img.main-img{width:100%;height:auto;object-fit:cover;display:block}
-    .nav-arrows{position:relative;width:100%;max-width:640px;display:flex;justify-content:space-between;margin-top:8px}
-    .nav-arrows button{background:transparent;border:1px solid #eee;border-radius:6px;padding:6px 10px;cursor:pointer}
-    /* details */
-    .details{background:var(--bg);padding:18px;border-radius:8px;border:1px solid #eee}
-    .title{font-size:26px;font-weight:700;margin:0 0 8px}
-    .sku{font-size:13px;color:var(--muted);margin-bottom:12px}
-    .price{font-size:28px;color:#111;font-weight:800;margin:6px 0}
-    .price .small{font-size:14px;color:var(--muted);font-weight:500;margin-left:8px}
-    .pay-note{color:#7b1fa2;font-size:14px;margin-top:8px}
-    .desc{color:var(--muted);margin:14px 0}
-    .stock{margin:8px 0;color:#0a7a00;font-weight:600}
-    .qty-row{display:flex;gap:8px;align-items:center;margin-top:14px}
-    .qty{display:flex;align-items:center;border:1px solid #ddd;border-radius:6px;overflow:hidden}
-    .qty button{background:#fff;border:none;padding:8px 10px;cursor:pointer}
-    .qty input{width:60px;text-align:center;border:none;padding:8px 10px;font-size:16px}
-    .add-btn{background:var(--accent);border:none;padding:12px 18px;border-radius:6px;cursor:pointer;font-weight:700;color:#111;margin-left:8px;flex:1}
-    .add-btn:hover{background:var(--accent-dark)}
-    .meta{font-size:13px;color:var(--muted);margin-top:14px}
-    .thumbs-scroll{max-height:680px;overflow:auto;padding-right:6px}
-    /* Estilos simples para el modal del carrito y auth buttons */
-    .auth-buttons { display:inline-flex; gap:8px; align-items:center; }
-    .auth-link { color:var(--primary-color, #222); text-decoration:none; padding:6px 10px; border-radius:6px; border:1px solid transparent;cursor: pointer; }
-    .auth-link:hover { background: rgba(0,0,0,0.03); }
+    /* ===== Página de producto — alineada con main2 ===== */
+    .product-wrap { width:90%; max-width:1200px; margin:0 auto; padding:30px 0 60px; }
+    .breadcrumbs { font-size:13px; color:#888; margin-bottom:20px; }
+    .breadcrumbs a { color:var(--accent-color); text-decoration:none; }
+    .breadcrumbs a:hover { text-decoration:underline; }
 
-    .modal { position:fixed; inset:0; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,0.4); z-index:1000; }
+    .product-layout {
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:40px;
+      align-items:start;
+    }
+
+    /* Galería */
+    .gallery { display:flex; flex-direction:column; gap:12px; }
+    .gallery .main-img-box {
+      width:100%; aspect-ratio:1/1; background:#fff; border-radius:12px;
+      overflow:hidden; display:flex; align-items:center; justify-content:center;
+      border:1px solid var(--neutral-color);
+    }
+    .gallery .main-img-box img {
+      width:100%; height:100%; object-fit:contain; display:block;
+    }
+    .gallery .thumbs-row {
+      display:flex; gap:8px; overflow-x:auto; padding-bottom:4px;
+    }
+    .gallery .thumb {
+      width:72px; height:72px; border-radius:8px; overflow:hidden;
+      border:2px solid transparent; cursor:pointer; flex-shrink:0;
+      background:#fff;
+    }
+    .gallery .thumb.active { border-color:var(--accent-color); }
+    .gallery .thumb img { width:100%; height:100%; object-fit:cover; display:block; }
+    .gallery .nav-row {
+      display:flex; gap:8px; justify-content:center;
+    }
+    .gallery .nav-row button {
+      background:var(--primary-color); color:#fff; border:none; border-radius:6px;
+      padding:8px 16px; cursor:pointer; font-size:14px; transition:background .2s;
+    }
+    .gallery .nav-row button:hover { background:var(--accent-color); }
+
+    /* Info del producto */
+    .product-info-panel { display:flex; flex-direction:column; gap:16px; }
+    .product-info-panel .p-title {
+      font-size:28px; font-weight:700; color:var(--primary-color); margin:0;
+    }
+    .product-info-panel .p-category {
+      display:inline-block; background:var(--accent-color); color:#fff;
+      padding:4px 12px; border-radius:20px; font-size:12px; font-weight:600;
+      text-transform:uppercase; letter-spacing:0.5px;
+    }
+    .product-info-panel .p-price {
+      font-size:32px; font-weight:800; color:var(--primary-color); margin:0;
+    }
+    .product-info-panel .p-desc {
+      color:#666; font-size:15px; line-height:1.7;
+    }
+    .product-info-panel .p-stock {
+      font-size:14px; font-weight:600;
+    }
+    .p-stock.in-stock { color:var(--accent-color); }
+    .p-stock.no-stock { color:#c0392b; }
+
+    .product-info-panel .p-material {
+      font-size:14px; color:#666;
+    }
+
+    /* Selector de color */
+    .color-selector { display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+    .color-selector label { font-weight:600; font-size:14px; margin-right:4px; }
+    .color-chip {
+      padding:6px 14px; border:2px solid var(--neutral-color); border-radius:20px;
+      cursor:pointer; font-size:13px; background:#fff; transition:all .2s;
+    }
+    .color-chip.selected { border-color:var(--accent-color); background:var(--accent-color); color:#fff; }
+
+    /* Cantidad y botón */
+    .qty-add-row { display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
+    .qty-box {
+      display:flex; align-items:center; border:1px solid var(--neutral-color);
+      border-radius:8px; overflow:hidden;
+    }
+    .qty-box button {
+      width:40px; height:44px; border:none; background:#fff; font-size:18px;
+      cursor:pointer; transition:background .2s;
+    }
+    .qty-box button:hover { background:var(--light-color); }
+    .qty-box input {
+      width:50px; height:44px; text-align:center; border:none;
+      border-left:1px solid var(--neutral-color);
+      border-right:1px solid var(--neutral-color);
+      font-size:16px; font-weight:600;
+    }
+    .add-cart-btn {
+      flex:1; min-width:200px; padding:14px 24px; border:none; border-radius:8px;
+      background:var(--accent-color); color:#fff; font-size:16px; font-weight:700;
+      cursor:pointer; transition:background .2s; display:flex; align-items:center;
+      justify-content:center; gap:8px;
+    }
+    .add-cart-btn:hover { background:#3D6534; }
+
+    /* Características */
+    .features-grid {
+      display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px;
+    }
+    .feature-tag {
+      display:flex; align-items:center; gap:6px; font-size:13px; color:#555;
+    }
+    .feature-tag::before { content:"✓"; color:var(--accent-color); font-weight:700; }
+
+    /* Modal carrito */
+    .modal { position:fixed; inset:0; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,0.45); z-index:1000; }
     .modal.show { display:flex; }
-    .modal-content { background:#fff; border-radius:8px; width:90%; max-width:720px; max-height:80vh; overflow:auto; padding:18px; box-shadow:0 10px 30px rgba(0,0,0,0.2); }
-    .cart-item { display:flex; justify-content:space-between; gap:12px; padding:8px 0; border-bottom:1px solid #eee; align-items:center; }
-    .cart-item img { width:64px; height:64px; object-fit:cover; border-radius:6px; }
-    .cart-actions { display:flex; gap:8px; align-items:center; }
-    .btn-small { padding:6px 10px; border-radius:6px; border:none; cursor:pointer; background:#eee; }
+    .modal-content {
+      background:#fff; border-radius:12px; width:90%; max-width:600px;
+      max-height:80vh; overflow:auto; padding:24px;
+      box-shadow:0 20px 60px rgba(0,0,0,0.2);
+    }
+    .cart-item {
+      display:flex; justify-content:space-between; gap:12px; padding:12px 0;
+      border-bottom:1px solid #eee; align-items:center;
+    }
+    .cart-item img { width:56px; height:56px; object-fit:cover; border-radius:8px; }
+    .btn-small { padding:6px 12px; border-radius:6px; border:none; cursor:pointer; background:#eee; font-size:13px; }
+    .btn-small:hover { background:#ddd; }
+
     /* Responsive */
-    @media (max-width: 992px){
-      .product-grid{grid-template-columns:64px 1fr;grid-template-rows:auto auto;gap:12px}
-      .details{grid-column:1 / -1}
-      .main-media .main-img-wrap img.main-img{height:auto}
+    @media (max-width: 768px) {
+      .product-layout { grid-template-columns:1fr; gap:24px; }
+      .product-info-panel .p-title { font-size:22px; }
+      .product-info-panel .p-price { font-size:26px; }
     }
   </style>
 </head>
 <body>
-  <!-- Header de navegación (nuevo) -->
-  <header class="site-header" style="background:transparent;padding:12px 0;border-bottom:1px solid rgba(0,0,0,0.05);top: auto;">
-    <div class="wrap" style="display:flex;align-items:center;justify-content:space-between;">
-      <a href="main2.html" class="logo" style="font-weight:700;color:var(--primary-color);text-decoration:none">Urban<span style="color:var(--accent-color,#f0c38c)">Plast</span></a>
-      <nav style="display:flex;gap:18px;align-items:center;">
-        <a href="main2.html" style="color:var(--primary-color);text-decoration:none">Inicio</a>
-        <a href="productos.html" style="color:var(--primary-color);text-decoration:none">Productos</a>
-        <a id="adminLink" href="panel_Admin.html" style="color:var(--primary-color);text-decoration:none;display:none">Admin</a>
-
-        <div id="authArea" class="auth-buttons">
-          <a id="loginLink" class="auth-link" href="login.html">Iniciar Sesión</a>
-          <a id="registerLink" class="auth-link" href="register.html">Registrarse</a>
-          <div id="userMenu" style="display:none; align-items:center;">
-            <span id="userGreeting" style="margin-right:8px;color: black;" ></span>
-            <button id="logoutBtn" class="auth-link">Cerrar Sesión</button>
-          </div>
-        </div>
-
-        <button id="openCartBtn" style="background:transparent;border: none;cursor:pointer;font-size:18px">🛒 <span id="cartCount">0</span></button>
+  <!-- Header (igual que main2.html) -->
+  <header>
+    <div class="container header-content">
+      <a href="/" class="logo">Urban<span>Plast</span></a>
+      <nav>
+        <ul>
+          <li><a href="/">Inicio</a></li>
+          <li><a href="/productos.html">Productos</a></li>
+          <li><a href="/#about">Nosotros</a></li>
+          <li><a href="/#contact">Contacto</a></li>
+          <li id="auth-buttons" class="auth-buttons">
+            <a id="loginLink" class="auth-btn login-btn" href="/login.html">Iniciar Sesión</a>
+            <a id="registerLink" class="auth-btn register-btn" href="/register.html">Registrarse</a>
+          </li>
+          <li id="user-menu" class="user-menu" style="display:none;">
+            <span class="user-greeting" id="userGreeting"></span>
+            <a href="/admin" id="adminLink" class="auth-btn login-btn" style="display:none;padding:6px 12px;font-size:13px;">Admin</a>
+            <button id="logoutBtn" class="logout-btn">Cerrar Sesión</button>
+          </li>
+          <li class="cart-icon" onclick="openCart()">
+            🛒 <span id="cartCount" class="cart-count">0</span>
+          </li>
+        </ul>
       </nav>
     </div>
   </header>
 
-  <div class="wrap">
-    <div class="breadcrumbs" id="breadcrumbs">Inicio · Productos · <span id="crumb-name">Cargando...</span></div>
+  <div class="product-wrap">
+    <div class="breadcrumbs">
+      <a href="/">Inicio</a> · <a href="/productos.html">Productos</a> · <span id="crumb-name">Cargando...</span>
+    </div>
 
-    <div id="productArea" class="product-grid">
-      <!-- thumbnails -->
-      <div class="thumbs-scroll">
-        <div class="thumbs" id="thumbs"></div>
-      </div>
-
-      <!-- main image -->
-      <div class="main-media" id="mainMedia">
-        <div class="main-img-wrap">
-          <img id="mainImage" class="main-img" src="img/logo.png" alt="imagen producto">
+    <div id="productArea" class="product-layout">
+      <!-- Galería -->
+      <div class="gallery">
+        <div class="main-img-box">
+          <img id="mainImage" src="/img/default.png" alt="imagen producto">
         </div>
-        <div class="nav-arrows">
-          <button id="prevBtn" title="Anterior">◀</button>
-          <button id="nextBtn" title="Siguiente">▶</button>
+        <div class="thumbs-row" id="thumbs"></div>
+        <div class="nav-row">
+          <button id="prevBtn">◀ Anterior</button>
+          <button id="nextBtn">Siguiente ▶</button>
         </div>
       </div>
 
-      <!-- details -->
-      <div class="details" id="details">
-        <div class="title" id="productName">Cargando...</div>
-        <div class="sku" id="productSku">SKU: —</div>
-        <div class="price" id="productPrice">$0.00 <span class="small" id="priceNote"></span></div>
-        <div class="pay-note" id="payNote" style="display:none"></div>
-        <div class="desc" id="productDesc">—</div>
-        <div class="stock" id="productStock"></div>
+      <!-- Detalles -->
+      <div class="product-info-panel">
+        <span class="p-category" id="productCategory">—</span>
+        <h1 class="p-title" id="productName">Cargando...</h1>
+        <div class="p-price" id="productPrice">$0.00</div>
+        <div class="p-stock" id="productStock">—</div>
+        <p class="p-desc" id="productDesc">—</p>
+        <div class="p-material" id="productMaterial"></div>
 
-        <!-- Selector de color (se rellena en renderDetails) -->
-        <div style="margin-top:10px;">
-          <label for="colorSelect">Color:
-            <select id="colorSelect" style="margin-left:8px;padding:6px;border-radius:4px;border:1px solid #ddd;">
-              <option value="">Seleccionar</option>
-            </select>
-          </label>
+        <div id="featuresArea" style="display:none">
+          <span style="font-weight:600;font-size:14px;">Características:</span>
+          <div class="features-grid" id="featuresGrid"></div>
         </div>
 
-        <div class="qty-row" style="margin-top:12px;">
-          <div class="qty" role="spinbutton" aria-label="Cantidad">
+        <div class="color-selector" id="colorSelector">
+          <label>Color:</label>
+        </div>
+
+        <div class="qty-add-row">
+          <div class="qty-box">
             <button type="button" id="qtyMinus">−</button>
             <input id="qtyInput" type="number" value="1" min="1" />
             <button type="button" id="qtyPlus">+</button>
           </div>
-          <button id="addToCartBtn" class="add-btn">Agregar al carrito</button>
+          <button id="addToCartBtn" class="add-cart-btn">🛒 Agregar al carrito</button>
         </div>
-
-        <div class="meta" id="productMeta"></div>
       </div>
     </div>
   </div>
@@ -146,16 +220,14 @@
   <!-- Modal Carrito -->
   <div id="cartModal" class="modal" aria-hidden="true">
     <div class="modal-content">
-      <div style="display:flex;justify-content:space-between;align-items:center;">
-        <h3>Tu Carrito</h3>
-        <button onclick="closeCart()" class="btn-small">Cerrar</button>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+        <h3 style="margin:0;">Tu Carrito</h3>
+        <button onclick="closeCart()" class="btn-small">✕ Cerrar</button>
       </div>
-      <div id="cartModalItems" style="margin-top:12px;">
-        <!-- items dinámicos -->
-      </div>
-      <div id="cartModalTotal" style="margin-top:12px;font-weight:700;">Total: $0.00</div>
-      <div style="margin-top:12px;display:flex;gap:8px;justify-content:flex-end;">
-        <button id="checkoutBtn" class="add-btn">Finalizar compra</button>
+      <div id="cartModalItems"></div>
+      <div id="cartModalTotal" style="margin-top:16px;font-weight:700;font-size:18px;">Total: $0.00</div>
+      <div style="margin-top:16px;display:flex;gap:8px;justify-content:flex-end;">
+        <button id="checkoutBtn" class="add-cart-btn" style="min-width:unset;">Finalizar compra</button>
       </div>
     </div>
   </div>
@@ -167,10 +239,11 @@
   let images = [];
   let currentIndex = 0;
   let productData = null;
+  let selectedColor = '';
 
-  // Local cart helpers (guardar color y cantidad)
+  // ===== Local cart =====
   function readLocalCart(){
-    try{ return JSON.parse(localStorage.getItem('cart')) || []; } catch(e){ return []; }
+    try{ return JSON.parse(localStorage.getItem('cart')) || []; }catch(e){ return []; }
   }
   function writeLocalCart(cart){
     localStorage.setItem('cart', JSON.stringify(cart));
@@ -179,8 +252,7 @@
   function updateCartCountUI(){
     const cart = readLocalCart();
     const count = cart.reduce((s,i)=> s + (i.quantity||0), 0);
-    const el = document.getElementById('cartCount');
-    if(el) el.textContent = count;
+    document.getElementById('cartCount').textContent = count;
   }
 
   async function addToServerCart(token, productId, quantity){
@@ -194,25 +266,26 @@
     }catch(e){ return false; }
   }
 
+  // ===== Cargar producto =====
   async function loadProduct(){
     const id = qsParam('id');
-    if(!id){ document.getElementById('productArea').innerHTML = '<p>ID de producto no especificado.</p>'; return; }
+    if(!id){ document.getElementById('productArea').innerHTML = '<p style="text-align:center;padding:40px;">ID de producto no especificado.</p>'; return; }
     try{
       const res = await fetch(`${API_BASE}/products/${id}`);
-      if(!res.ok){ document.getElementById('productArea').innerHTML = `<p>Error ${res.status}</p>`; return; }
-      const product = await res.json();
-      productData = product;
-      images = (product.images && product.images.length) ? product.images.slice() : [product.image || '/img/default.png'];
+      if(!res.ok){ document.getElementById('productArea').innerHTML = `<p style="text-align:center;padding:40px;">Error ${res.status}</p>`; return; }
+      productData = await res.json();
+      images = (productData.images && productData.images.length) ? productData.images.slice() : [productData.image || '/img/default.png'];
       currentIndex = 0;
       renderGallery();
       renderDetails();
       updateCartCountUI();
     }catch(err){
       console.error(err);
-      document.getElementById('productArea').innerHTML = '<p>Error de conexión al servidor</p>';
+      document.getElementById('productArea').innerHTML = '<p style="text-align:center;padding:40px;">Error de conexión al servidor</p>';
     }
   }
 
+  // ===== Galería =====
   function renderGallery(){
     const thumbsEl = document.getElementById('thumbs');
     thumbsEl.innerHTML = '';
@@ -223,60 +296,85 @@
       d.addEventListener('click', ()=>{ currentIndex = idx; updateMain(); });
       thumbsEl.appendChild(d);
     });
+    // Ocultar nav si solo hay 1 imagen
+    document.querySelector('.nav-row').style.display = images.length > 1 ? 'flex' : 'none';
     updateMain();
   }
 
   function updateMain(){
-    const mainImg = document.getElementById('mainImage');
-    mainImg.src = images[currentIndex] || '/img/default.png';
-    // update active class
+    document.getElementById('mainImage').src = images[currentIndex] || '/img/default.png';
     document.querySelectorAll('.thumb').forEach((el, i)=> el.classList.toggle('active', i===currentIndex));
   }
 
-  document.getElementById('prevBtn').addEventListener('click', ()=> {
-    if(images.length===0) return;
+  document.getElementById('prevBtn').addEventListener('click', ()=>{
+    if(images.length<2) return;
     currentIndex = (currentIndex - 1 + images.length) % images.length;
     updateMain();
   });
-  document.getElementById('nextBtn').addEventListener('click', ()=> {
-    if(images.length===0) return;
+  document.getElementById('nextBtn').addEventListener('click', ()=>{
+    if(images.length<2) return;
     currentIndex = (currentIndex + 1) % images.length;
     updateMain();
   });
 
+  // ===== Renderizar detalles =====
   function renderDetails(){
     document.getElementById('productName').textContent = productData.name;
     document.getElementById('crumb-name').textContent = productData.name;
-    document.getElementById('productSku').textContent = `SKU: ${productData._id || ''}`;
-    document.getElementById('productPrice').innerHTML = `$${(productData.price||0).toFixed(2)}`;
+    document.getElementById('productCategory').textContent = productData.category || '';
+    document.getElementById('productPrice').textContent = `$${(productData.price||0).toFixed(2)}`;
     document.getElementById('productDesc').textContent = productData.description || '';
-    document.getElementById('productStock').textContent = productData.stock ? `Stock: ${productData.stock}` : 'Sin stock';
-    document.getElementById('productMeta').innerHTML = `<strong>Material:</strong> ${productData.material || '-'} · <strong>Colores:</strong> ${(productData.colors||[]).join(', ') || '-'}`;
 
-    // Rellenar selector de color
-    const colorSelect = document.getElementById('colorSelect');
-    colorSelect.innerHTML = '';
-    const colors = (productData.colors && productData.colors.length) ? productData.colors : ['Default'];
-    colors.forEach(c => {
-      const opt = document.createElement('option');
-      opt.value = c;
-      opt.textContent = c;
-      colorSelect.appendChild(opt);
-    });
+    const stockEl = document.getElementById('productStock');
+    if (productData.stock > 0) {
+      stockEl.textContent = `✓ ${productData.stock} unidades disponibles`;
+      stockEl.className = 'p-stock in-stock';
+    } else {
+      stockEl.textContent = '✗ Sin stock';
+      stockEl.className = 'p-stock no-stock';
+    }
+
+    document.getElementById('productMaterial').innerHTML = productData.material ? `<strong>Material:</strong> ${productData.material}` : '';
+
+    // Características
+    if (productData.features && productData.features.length) {
+      document.getElementById('featuresArea').style.display = 'block';
+      document.getElementById('featuresGrid').innerHTML = productData.features.map(f => `<div class="feature-tag">${f}</div>`).join('');
+    }
+
+    // Colores
+    const colorSel = document.getElementById('colorSelector');
+    const colors = (productData.colors && productData.colors.length) ? productData.colors : [];
+    if (colors.length === 0) {
+      colorSel.style.display = 'none';
+    } else {
+      colorSel.innerHTML = '<label>Color:</label>';
+      colors.forEach((c, i) => {
+        const chip = document.createElement('span');
+        chip.className = 'color-chip' + (i === 0 ? ' selected' : '');
+        chip.textContent = c;
+        chip.addEventListener('click', () => {
+          document.querySelectorAll('.color-chip').forEach(el => el.classList.remove('selected'));
+          chip.classList.add('selected');
+          selectedColor = c;
+        });
+        colorSel.appendChild(chip);
+      });
+      selectedColor = colors[0];
+    }
   }
 
-  // cantidad controls
+  // Cantidad
   const qtyInput = document.getElementById('qtyInput');
   document.getElementById('qtyMinus').addEventListener('click', ()=> { qtyInput.value = Math.max(1, parseInt(qtyInput.value||'1')-1); });
   document.getElementById('qtyPlus').addEventListener('click', ()=> { qtyInput.value = Math.max(1, parseInt(qtyInput.value||'1')+1); });
 
-  // add to cart: guardar localmente con color y cantidad, y enviar al server si hay token
+  // Agregar al carrito
   document.getElementById('addToCartBtn').addEventListener('click', async ()=>{
-    const color = document.getElementById('colorSelect') ? document.getElementById('colorSelect').value : '';
+    const color = selectedColor;
     const qty = Math.max(1, parseInt(qtyInput.value||'1'));
-    if(!productData){ alert('Producto no cargado'); return; }
+    if(!productData) return;
 
-    // Guardar local
     const cart = readLocalCart();
     const existingIdx = cart.findIndex(i => i.productId === productData._id && i.color === color);
     if(existingIdx > -1){
@@ -286,94 +384,74 @@
         productId: productData._id,
         name: productData.name,
         price: productData.price || 0,
-        image: (productData.images && productData.images[0]) || productData.image || '',
+        image: images[0] || '',
         color,
         quantity: qty
       });
     }
     writeLocalCart(cart);
 
-    // Intentar guardar en backend (solo cantidad)
     const token = localStorage.getItem('authToken');
-    if(token){
-      const ok = await addToServerCart(token, productData._id, qty);
-      if(!ok) console.warn('No se pudo guardar en backend; guardado solo local');
-    }
+    if(token) await addToServerCart(token, productData._id, qty);
 
-    alert(`${productData.name} (${color}) agregado al carrito x${qty}`);
+    // Feedback visual
+    const btn = document.getElementById('addToCartBtn');
+    const orig = btn.innerHTML;
+    btn.innerHTML = '✓ Agregado';
+    btn.style.background = '#27ae60';
+    setTimeout(()=>{ btn.innerHTML = orig; btn.style.background = ''; }, 1500);
   });
 
-  // Mostrar/ocultar UI de auth según sesión
+  // ===== Auth UI =====
   async function checkAuthStatus() {
     const token = localStorage.getItem('authToken');
-    if (!token) {
-      updateAuthUI(null);
-      return null;
-    }
+    if (!token) { updateAuthUI(null); return; }
     try {
       const res = await fetch(`${API_BASE}/me`, { headers: { 'Authorization': `Bearer ${token}` } });
-      if (!res.ok) { updateAuthUI(null); return null; }
+      if (!res.ok) { updateAuthUI(null); return; }
       const data = await res.json();
       updateAuthUI(data.user);
-      return data.user;
-    } catch (err) {
-      console.error('Error checking auth:', err);
-      updateAuthUI(null);
-      return null;
-    }
+    } catch (err) { updateAuthUI(null); }
   }
 
   function updateAuthUI(user) {
-    const loginLink = document.getElementById('loginLink');
-    const registerLink = document.getElementById('registerLink');
-    const userMenu = document.getElementById('userMenu');
-    const userGreeting = document.getElementById('userGreeting');
+    const authBtns = document.getElementById('auth-buttons');
+    const userMenu = document.getElementById('user-menu');
     const adminLink = document.getElementById('adminLink');
 
     if (user) {
-      loginLink.style.display = 'none';
-      registerLink.style.display = 'none';
+      authBtns.style.display = 'none';
       userMenu.style.display = 'flex';
-      userGreeting.textContent = `Hola, ${user.name}`;
-      // Mostrar admin solo si role === 'admin'
-      adminLink.style.display = (user.role && user.role === 'admin') ? 'inline' : 'none';
+      document.getElementById('userGreeting').textContent = `Hola, ${user.name}`;
+      adminLink.style.display = (user.role === 'admin') ? 'inline' : 'none';
     } else {
-      loginLink.style.display = 'inline';
-      registerLink.style.display = 'inline';
+      authBtns.style.display = 'flex';
       userMenu.style.display = 'none';
       adminLink.style.display = 'none';
     }
   }
 
-  // logout local
   document.getElementById('logoutBtn').addEventListener('click', () => {
     localStorage.removeItem('authToken');
     updateAuthUI(null);
-    alert('Sesión cerrada');
   });
 
-  // Abrir / cerrar carrito (modal)
-  document.getElementById('openCartBtn').addEventListener('click', () => openCart());
+  // ===== Carrito modal =====
   function openCart(){
     updateCartModal();
-    const modal = document.getElementById('cartModal');
-    modal.classList.add('show');
-    modal.setAttribute('aria-hidden','false');
+    document.getElementById('cartModal').classList.add('show');
   }
   function closeCart(){
-    const modal = document.getElementById('cartModal');
-    modal.classList.remove('show');
-    modal.setAttribute('aria-hidden','true');
+    document.getElementById('cartModal').classList.remove('show');
   }
 
-  // Rellenar modal con contenido del localStorage cart (incluye color)
   function updateCartModal(){
     const itemsEl = document.getElementById('cartModalItems');
     const totalEl = document.getElementById('cartModalTotal');
     const cart = readLocalCart();
     itemsEl.innerHTML = '';
     if (cart.length === 0) {
-      itemsEl.innerHTML = '<p>Tu carrito está vacío.</p>';
+      itemsEl.innerHTML = '<p style="color:#888;text-align:center;padding:20px;">Tu carrito está vacío.</p>';
       totalEl.textContent = 'Total: $0.00';
       document.getElementById('checkoutBtn').disabled = true;
       return;
@@ -389,15 +467,13 @@
           <img src="${it.image || '/img/default.png'}" alt="${it.name}">
           <div>
             <div style="font-weight:700">${it.name}</div>
-            <div style="font-size:13px;color:#666">Color: ${it.color || '-'}</div>
-            <div style="font-size:13px;color:#666">Cant: ${it.quantity}</div>
+            <div style="font-size:13px;color:#666">${it.color ? 'Color: '+it.color+' · ' : ''}Cant: ${it.quantity}</div>
           </div>
         </div>
-        <div class="cart-actions">
+        <div style="display:flex;gap:8px;align-items:center">
           <div style="font-weight:700">$${itemTotal.toFixed(2)}</div>
-          <button class="btn-small" data-idx="${idx}" onclick="removeFromLocalCart(${idx})">Eliminar</button>
-        </div>
-      `;
+          <button class="btn-small" onclick="removeFromLocalCart(${idx})">🗑</button>
+        </div>`;
       itemsEl.appendChild(div);
     });
     totalEl.textContent = `Total: $${total.toFixed(2)}`;
@@ -406,39 +482,30 @@
 
   function removeFromLocalCart(index){
     const cart = readLocalCart();
-    if (index >=0 && index < cart.length) {
-      cart.splice(index,1);
-      writeLocalCart(cart);
-      updateCartModal();
-    }
+    if (index >=0 && index < cart.length) { cart.splice(index,1); writeLocalCart(cart); updateCartModal(); }
   }
 
-  // Checkout desde modal: si hay token hacemos checkout del backend con carrito local
+  // Checkout con MercadoPago
   document.getElementById('checkoutBtn').addEventListener('click', async () => {
     const token = localStorage.getItem('authToken');
     const cart = readLocalCart();
-    if (cart.length === 0) { alert('Carrito vacío'); return; }
+    if (cart.length === 0) return;
     if (!token) { alert('Por favor inicia sesión para finalizar compra'); window.location.href = '/login.html'; return; }
 
-    // Backend espera items con productId, quantity, price etc. Enviamos solo lo necesario
     try {
-      const res = await fetch(`${API_BASE}/checkout`, {
+      const res = await fetch(`${API_BASE}/create-preference`, {
         method: 'POST',
         headers: { 'Content-Type':'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({
-          cart: cart.map(i => ({ productId: i.productId, quantity: i.quantity, price: i.price })),
-          shippingAddress: {}, // aquí podrías pedir datos antes
-          paymentMethod: 'local'
+          cart: cart.map(i => ({ productId: i.productId, quantity: i.quantity, price: i.price, name: i.name })),
+          shippingAddress: {}
         })
       });
       const data = await res.json();
-      if (res.ok) {
-        alert('Compra realizada. Orden: '+ (data.orderId || 'N/A'));
-        // limpiar carrito local y cerrar modal
-        writeLocalCart([]);
-        closeCart();
+      if (res.ok && data.init_point) {
+        window.location.href = data.init_point;
       } else {
-        alert(data.error || 'Error en checkout');
+        alert(data.error || 'Error al crear el pago');
       }
     } catch (err) {
       console.error(err);
@@ -446,7 +513,7 @@
     }
   });
 
-  // Inicializaciones finales: comprobar auth y cargar producto
+  // ===== Init =====
   (async function init(){
     await checkAuthStatus();
     updateCartCountUI();
