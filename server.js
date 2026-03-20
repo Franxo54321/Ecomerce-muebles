@@ -345,39 +345,11 @@ app.get('/api/products/:id', async (req, res) => {
   }
 });
 
-// --- Registrar ruta /api/products con dos maneras ---
-// Si multer está disponible, registramos la ruta multipart
-if (upload) {
-  app.post('/api/products', upload.single('image'), async (req, res) => {
-    try {
-      const { name, price, category, description } = req.body;
-      if (!name || !price || !category) {
-        return res.status(400).json({ error: 'Faltan campos obligatorios: name, price o category' });
-      }
-
-      let imagePath = '';
-      if (req.file) imagePath = `/img/uploads/${req.file.filename}`;
-
-      const product = new Product({
-        name,
-        price: parseFloat(price),
-        description: description || '',
-        category,
-        image: imagePath,
-        stock: req.body.stock ? parseInt(req.body.stock, 10) : 0
-      });
-
-      await product.save();
-      res.status(201).json({ success: true, product });
-    } catch (err) {
-      console.error('Error creando producto (multipart):', err);
-      res.status(500).json({ error: 'Error al crear el producto', details: err.message });
-    }
-  });
-} 
-
-// Ruta alternativa que acepta JSON con field imageBase64 (funciona sin multer)
-app.post('/api/products', async (req, res) => {
+// --- Ruta unificada POST /api/products ---
+// Acepta multipart/form-data (multer) y JSON con imageBase64/imageBase64s
+// En ambos casos sube a Cloudinary si está configurado, o guarda en disco local
+const productPostMiddleware = upload ? upload.single('image') : (req, res, next) => next();
+app.post('/api/products', productPostMiddleware, async (req, res) => {
   try {
     const { name, price, category, description, imageBase64, imageUrl, imageBase64s, colors } = req.body;
     if (!name || !price || !category) {
@@ -387,8 +359,34 @@ app.post('/api/products', async (req, res) => {
     let imagePath = '';
     const imagePaths = [];
 
-    // soportar tanto imageBase64 (string) como imageBase64s (array)
-    if (Array.isArray(imageBase64s) && imageBase64s.length > 0) {
+    if (req.file) {
+      // Archivo subido via multipart/form-data - subir a Cloudinary o guardar en disco
+      if (process.env.CLOUDINARY_CLOUD_NAME) {
+        try {
+          const fileBuffer = req.file.buffer || require('fs').readFileSync(req.file.path);
+          imagePath = await new Promise((resolve, reject) => {
+            const uploadStream = cloudinary.uploader.upload_stream(
+              { folder: 'plastimuebles', resource_type: 'image' },
+              (error, result) => { if (error) reject(error); else resolve(result.secure_url); }
+            );
+            const { Readable } = require('stream');
+            const s = new Readable();
+            s.push(fileBuffer);
+            s.push(null);
+            s.pipe(uploadStream);
+          });
+          console.log('Imagen multipart subida a Cloudinary:', imagePath);
+          // Eliminar el archivo temporal de disco si existe
+          if (req.file.path) try { require('fs').unlinkSync(req.file.path); } catch (_) {}
+        } catch (err) {
+          console.error('Error subiendo a Cloudinary desde multipart:', err);
+          imagePath = `/img/uploads/${req.file.filename}`;
+        }
+      } else {
+        imagePath = `/img/uploads/${req.file.filename}`;
+      }
+    } else if (Array.isArray(imageBase64s) && imageBase64s.length > 0) {
+      // soportar imageBase64s (array de base64)
       for (const b64 of imageBase64s) {
         try {
           const p = await saveBase64Image(b64);
@@ -1127,86 +1125,82 @@ mongoose.connection.once('connected', () => {
 
 startServer(DEFAULT_PORT, MAX_PORT_ATTEMPTS);
 
-// Si multer está disponible, exponer PUT multipart para subir archivos directos
-if (upload) {
-  app.put('/api/products/:id/images', upload.array('images', 10), async (req, res) => {
-    try {
-      const product = await Product.findById(req.params.id);
-      if (!product) return res.status(404).json({ error: 'Producto no encontrado' });
-
-      const savedPaths = [];
-      if (req.files && req.files.length) {
-        for (const f of req.files) {
-          // f.filename ya fue generado por multer.diskStorage
-          savedPaths.push(`/img/uploads/${f.filename}`);
-        }
-      }
-
-      const replace = req.body.replace === 'true' || req.body.replace === true;
-
-      if (replace) {
-        product.images = savedPaths;
-        product.image = savedPaths[0] || product.image;
-      } else {
-        product.images = (product.images || []).concat(savedPaths);
-        if (!product.image && product.images.length) product.image = product.images[0];
-      }
-
-      await product.save();
-      res.json({ success: true, product });
-    } catch (err) {
-      console.error('Error multipart PUT images:', err);
-      if (err.code === 'LIMIT_FILE_SIZE') return res.status(413).json({ error: 'Imagen demasiado grande' });
-      res.status(500).json({ error: 'Error al actualizar imágenes', details: err.message });
-    }
-  });
-}
-
-// PUT en JSON (acepta imageBase64s array y/o imageUrls array)
-// Asegurar que al agregar imágenes se actualice product.images y se fije product.image = product.images[0]
-app.put('/api/products/:id/images', async (req, res) => {
+// PUT unificado para imágenes - acepta multipart y JSON con base64
+const productImagesMiddleware = upload ? upload.array('images', 10) : (req, res, next) => next();
+app.put('/api/products/:id/images', productImagesMiddleware, async (req, res) => {
   try {
-    const { imageBase64s, imageUrls, replace } = req.body;
     const product = await Product.findById(req.params.id);
     if (!product) return res.status(404).json({ error: 'Producto no encontrado' });
 
     const newPaths = [];
 
-    if (Array.isArray(imageBase64s) && imageBase64s.length > 0) {
-      for (const b64 of imageBase64s) {
-        try {
-          const p = await saveBase64Image(b64);
-          newPaths.push(p);
-        } catch (err) {
-          console.error('Error guardando imagen Base64 en PUT:', err);
-          if (err.code === 'LIMIT_FILE_SIZE') {
-            return res.status(413).json({ error: 'Al menos una imagen excede el límite permitido.' });
+    if (req.files && req.files.length) {
+      // Archivos multipart - subir a Cloudinary si está configurado
+      for (const f of req.files) {
+        if (process.env.CLOUDINARY_CLOUD_NAME) {
+          try {
+            const fileBuffer = f.buffer || require('fs').readFileSync(f.path);
+            const url = await new Promise((resolve, reject) => {
+              const uploadStream = cloudinary.uploader.upload_stream(
+                { folder: 'plastimuebles', resource_type: 'image' },
+                (error, result) => { if (error) reject(error); else resolve(result.secure_url); }
+              );
+              const { Readable } = require('stream');
+              const s = new Readable();
+              s.push(fileBuffer);
+              s.push(null);
+              s.pipe(uploadStream);
+            });
+            console.log('Imagen multipart subida a Cloudinary:', url);
+            if (f.path) try { require('fs').unlinkSync(f.path); } catch (_) {}
+            newPaths.push(url);
+          } catch (err) {
+            console.error('Error subiendo a Cloudinary desde multipart PUT:', err);
+            newPaths.push(`/img/uploads/${f.filename}`);
           }
+        } else {
+          newPaths.push(`/img/uploads/${f.filename}`);
+        }
+      }
+    } else {
+      // JSON con base64 o URLs
+      const { imageBase64s, imageUrls } = req.body;
+      if (Array.isArray(imageBase64s) && imageBase64s.length > 0) {
+        for (const b64 of imageBase64s) {
+          try {
+            newPaths.push(await saveBase64Image(b64));
+          } catch (err) {
+            console.error('Error guardando imagen Base64 en PUT:', err);
+            if (err.code === 'LIMIT_FILE_SIZE') {
+              return res.status(413).json({ error: 'Al menos una imagen excede el límite permitido.' });
+            }
+          }
+        }
+      }
+      if (Array.isArray(imageUrls) && imageUrls.length > 0) {
+        for (const u of imageUrls) {
+          if (typeof u === 'string' && u.trim()) newPaths.push(u);
         }
       }
     }
 
-    if (Array.isArray(imageUrls) && imageUrls.length > 0) {
-      for (const u of imageUrls) {
-        if (typeof u === 'string' && u.trim()) newPaths.push(u);
-      }
-    }
-
+    const replace = req.body.replace === 'true' || req.body.replace === true;
     if (replace) {
       product.images = newPaths;
+      product.image = newPaths[0] || product.image;
     } else {
       product.images = (product.images || []).concat(newPaths);
+      if (!product.image && product.images.length) product.image = product.images[0];
     }
 
-    // Siempre actualizar image principal si hay imágenes disponibles
-    if (product.images && product.images.length > 0) {
+    if (product.images && product.images.length > 0 && !product.image) {
       product.image = product.images[0];
     }
 
     await product.save();
     res.json({ success: true, product });
   } catch (err) {
-    console.error('Error PUT images JSON:', err);
+    console.error('Error PUT images:', err);
     if (err.code === 'LIMIT_FILE_SIZE') return res.status(413).json({ error: 'Imagen demasiado grande' });
     res.status(500).json({ error: 'Error al actualizar imágenes', details: err.message });
   }
