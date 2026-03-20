@@ -24,6 +24,7 @@
                     </li>
                     <li id="user-menu" class="user-menu" style="display: none;">
                         <span class="user-greeting" id="user-greeting"></span>
+                        <a href="/admin" id="admin-link" class="auth-btn login-btn" style="display:none;padding:6px 12px;font-size:13px;">Admin</a>
                         <button class="logout-btn" onclick="logout()">Cerrar Sesión</button>
                     </li>
                     <li class="cart-icon" onclick="openCart()">
@@ -226,8 +227,7 @@
                     <div class="form-group">
                         <label for="paymentMethod">Método de Pago</label>
                         <select id="paymentMethod" required>
-                            <option value="credit_card">Tarjeta de Crédito</option>
-                            <option value="paypal">PayPal</option>
+                            <option value="mercadopago">MercadoPago (Tarjeta / Transferencia)</option>
                         </select>
                     </div>
                     <button type="submit" class="btn">Pagar Ahora</button>
@@ -240,7 +240,7 @@
         // Variables globales
         let currentUser = null;
         let authToken = localStorage.getItem('authToken');
-        const API_BASE = 'http://localhost:3000/api';
+        const API_BASE = window.location.origin + '/api';
 
         // Funciones de autenticación
         async function checkAuthStatus() {
@@ -258,6 +258,11 @@
 					document.getElementById('auth-buttons').style.display = 'none';
 					document.getElementById('user-menu').style.display = 'flex';
 					currentUser = user;
+					// Mostrar botón Admin solo si es admin
+					const adminLink = document.getElementById('admin-link');
+					if (adminLink) {
+						adminLink.style.display = (user.role === 'admin') ? 'inline-block' : 'none';
+					}
 				} else {
 					// token inválido o expirado
 					console.warn('Token inválido o expirado, limpiando sesión');
@@ -276,7 +281,6 @@
 			return;
 		}
 
-		console.log('Registrando usuario', { name, email });
 		try {
 			const response = await fetch(`${API_BASE}/register`, {
 				method: 'POST',
@@ -284,31 +288,27 @@
 				body: JSON.stringify({ name, email, password })
 			});
 
-			// parse seguro de la respuesta
-			let data = null;
-			const ct = response.headers.get('content-type') || '';
-			if (ct.includes('application/json')) {
-				data = await response.json();
-			} else {
-				const text = await response.text();
-				console.warn('register response (no json):', text);
-			}
+			const data = await response.json();
 
-			console.log('/api/register status:', response.status, data);
-
-			if (response.ok) {
+			if (response.ok && data.needsVerification) {
+				closeModal('registerModal');
+				// Redirigir a register.html para ingresar el código
+				alert(data.devCode
+					? `Código de verificación (desarrollo): ${data.devCode}`
+					: 'Se envió un código de verificación a tu correo. Revisa tu bandeja.');
+				window.location.href = '/register.html';
+			} else if (response.ok && data.token) {
 				authToken = data.token;
 				localStorage.setItem('authToken', authToken);
 				closeModal('registerModal');
 				await checkAuthStatus();
 				alert('Registro exitoso');
 			} else {
-				const errMsg = (data && data.error) ? data.error : `Error al registrarse (status ${response.status})`;
-				alert(errMsg);
+				alert(data.error || `Error al registrarse (status ${response.status})`);
 			}
 		} catch (err) {
-			console.error('Network error registering:', err);
-			alert('Error de conexión al intentar registrar. Revisa la consola y que server.js esté corriendo.');
+			console.error('Error registrando:', err);
+			alert('Error de conexión. Asegúrate que el servidor esté corriendo.');
 		}
 	}
 
@@ -568,26 +568,15 @@ document.head.appendChild(styleTag);
 
         async function checkout(shippingInfo, paymentMethod) {
             try {
-                // Primero obtener el carrito actual
                 const cartResponse = await fetch(`${API_BASE}/cart`, {
-                    headers: {
-                        'Authorization': `Bearer ${authToken}`
-                    }
+                    headers: { 'Authorization': `Bearer ${authToken}` }
                 });
-
-                if (!cartResponse.ok) {
-                    throw new Error('Error obteniendo el carrito');
-                }
-
+                if (!cartResponse.ok) throw new Error('Error obteniendo el carrito');
                 const cart = await cartResponse.json();
-                
-                if (cart.length === 0) {
-                    alert('Tu carrito está vacío');
-                    return;
-                }
+                if (cart.length === 0) { alert('Tu carrito está vacío'); return; }
 
-                // Realizar el checkout
-                const response = await fetch(`${API_BASE}/checkout`, {
+                // Crear preferencia de pago en MercadoPago
+                const response = await fetch(`${API_BASE}/create-preference`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -602,16 +591,15 @@ document.head.appendChild(styleTag);
 
                 const data = await response.json();
 
-                if (response.ok) {
-                    alert('¡Compra realizada con éxito! Número de orden: ' + data.orderId);
-                    closeModal('cartModal');
-                    updateCartCount();
+                if (response.ok && data.init_point) {
+                    // Redirigir a MercadoPago para pagar
+                    window.location.href = data.init_point;
                 } else {
-                    alert(data.error || 'Error al procesar la compra');
+                    alert(data.error || 'Error al crear el pago');
                 }
             } catch (error) {
                 console.error('Error:', error);
-                alert('Error de conexión');
+                alert('Error de conexión al procesar el pago');
             }
         }
 

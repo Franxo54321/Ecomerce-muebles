@@ -426,7 +426,7 @@
             </a>
             <div class="api-status">
                 <div class="status-dot"></div>
-                <span>API Conectada: localhost:3000</span>
+                <span>API Conectada</span>
             </div>
         </div>
     </header>
@@ -556,7 +556,7 @@
     <div id="notification" class="notification"></div>
 
     <script>
-        const API_BASE = 'http://localhost:3000/api';
+        const API_BASE = window.location.origin + '/api';
         const notification = document.getElementById('notification');
         
         // Función para mostrar notificaciones

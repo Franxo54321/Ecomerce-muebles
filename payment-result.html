@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<title>Resultado del Pago - UrbanPlast</title>
+	<style>
+		body{font-family:Arial,Helvetica,sans-serif;background:#f4f6f8;margin:0;display:flex;align-items:center;justify-content:center;min-height:100vh}
+		.card{background:white;padding:32px 40px;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,.1);max-width:480px;text-align:center}
+		.icon{font-size:64px;margin-bottom:12px}
+		h1{font-size:22px;margin-bottom:8px}
+		p{color:#666;font-size:14px;line-height:1.6}
+		.order-id{background:#f4f6f8;padding:8px 16px;border-radius:6px;font-family:monospace;font-size:13px;margin:12px 0;display:inline-block}
+		.btn{display:inline-block;margin-top:16px;padding:12px 24px;background:#4A7B3F;color:#fff;border:none;border-radius:6px;text-decoration:none;font-size:15px;font-weight:600;cursor:pointer}
+		.btn:hover{background:#3d6a35}
+		.status-success{color:#1a6635}
+		.status-failure{color:#c0392b}
+		.status-pending{color:#d4a017}
+	</style>
+</head>
+<body>
+	<div class="card" id="result">
+		<div class="icon" id="icon">⏳</div>
+		<h1 id="title">Procesando...</h1>
+		<p id="message">Verificando el estado de tu pago.</p>
+		<div class="order-id" id="orderId" style="display:none"></div>
+		<br>
+		<a href="/main2.html" class="btn">Volver a la tienda</a>
+	</div>
+
+	<script>
+		const params = new URLSearchParams(window.location.search);
+		const status = params.get('status');
+		const orderId = params.get('order');
+
+		const icon = document.getElementById('icon');
+		const title = document.getElementById('title');
+		const message = document.getElementById('message');
+		const orderEl = document.getElementById('orderId');
+
+		if (orderId) {
+			orderEl.textContent = 'Orden: ' + orderId;
+			orderEl.style.display = 'inline-block';
+		}
+
+		if (status === 'success') {
+			icon.textContent = '✅';
+			title.textContent = '¡Pago exitoso!';
+			title.className = 'status-success';
+			message.textContent = 'Tu compra fue procesada correctamente. Recibirás un correo con los detalles de tu pedido.';
+			// Limpiar carrito local
+			localStorage.removeItem('cart');
+		} else if (status === 'failure') {
+			icon.textContent = '❌';
+			title.textContent = 'Pago rechazado';
+			title.className = 'status-failure';
+			message.textContent = 'No se pudo procesar tu pago. Verificá los datos de tu tarjeta o intentá con otro medio de pago.';
+		} else if (status === 'pending') {
+			icon.textContent = '⏳';
+			title.textContent = 'Pago pendiente';
+			title.className = 'status-pending';
+			message.textContent = 'Tu pago está siendo procesado. Si elegiste transferencia o rapipago, completá el pago para confirmar tu orden.';
+		} else {
+			icon.textContent = '❓';
+			title.textContent = 'Estado desconocido';
+			message.textContent = 'No pudimos determinar el estado de tu pago. Contactanos si tenés dudas.';
+		}
+	</script>
+</body>
+</html>

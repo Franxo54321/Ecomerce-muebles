@@ -7,6 +7,7 @@ const jwt = require('jsonwebtoken');
 const fs = require('fs');
 const nodemailer = require('nodemailer');
 const cloudinary = require('cloudinary').v2;
+const { MercadoPagoConfig, Preference } = require('mercadopago');
 
 // Intentar require de multer, pero NO salir si falta (permitir fallback a Base64)
 let multer;
@@ -697,7 +698,7 @@ app.post('/api/contact', async (req, res) => {
   }
 });
 
-// Ruta para checkout
+// Ruta para checkout (legacy, mantener por compatibilidad)
 app.post('/api/checkout', authenticateToken, async (req, res) => {
   try {
     const { cart, shippingAddress, paymentMethod } = req.body;
@@ -706,10 +707,8 @@ app.post('/api/checkout', authenticateToken, async (req, res) => {
       return res.status(400).json({ error: 'El carrito está vacío' });
     }
     
-    // Calcular total
     const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     
-    // Crear orden
     const order = new Order({
       userId: req.user.userId,
       items: cart.map(item => ({
@@ -723,13 +722,9 @@ app.post('/api/checkout', authenticateToken, async (req, res) => {
     });
     
     await order.save();
-    
-    // Limpiar carrito
-    if (req.session.cart) {
-      req.session.cart = [];
-    }
-    
-    // Aquí integrarías con una pasarela de pago como Stripe
+
+    // Limpiar carrito en DB
+    await Cart.findOneAndUpdate({ userId: req.user.userId }, { items: [] });
     
     res.json({ 
       success: true, 
@@ -738,6 +733,135 @@ app.post('/api/checkout', authenticateToken, async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ error: 'Error al procesar la orden' });
+  }
+});
+
+// =============================================
+// MERCADOPAGO - Crear preferencia de pago
+// =============================================
+app.post('/api/create-preference', authenticateToken, async (req, res) => {
+  try {
+    if (!process.env.MP_ACCESS_TOKEN) {
+      return res.status(500).json({ error: 'MercadoPago no está configurado. Agrega MP_ACCESS_TOKEN en las variables de entorno.' });
+    }
+
+    const { cart, shippingAddress } = req.body;
+    if (!cart || cart.length === 0) {
+      return res.status(400).json({ error: 'El carrito está vacío' });
+    }
+
+    const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+    // Crear orden en DB con estado pendiente
+    const order = new Order({
+      userId: req.user.userId,
+      items: cart.map(item => ({
+        productId: item.productId,
+        quantity: item.quantity,
+        price: item.price
+      })),
+      total,
+      shippingAddress,
+      paymentMethod: 'mercadopago',
+      paymentStatus: 'pending',
+      orderStatus: 'awaiting_payment'
+    });
+    await order.save();
+
+    // Configurar MercadoPago
+    const mpClient = new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKEN });
+    const preference = new Preference(mpClient);
+    
+    const appUrl = process.env.APP_URL || `${req.protocol}://${req.get('host')}`;
+    
+    const preferenceData = await preference.create({
+      body: {
+        items: cart.map(item => ({
+          title: item.name || 'Producto',
+          quantity: item.quantity,
+          unit_price: Number(item.price),
+          currency_id: 'ARS'
+        })),
+        back_urls: {
+          success: `${appUrl}/payment-result.html?status=success&order=${order._id}`,
+          failure: `${appUrl}/payment-result.html?status=failure&order=${order._id}`,
+          pending: `${appUrl}/payment-result.html?status=pending&order=${order._id}`
+        },
+        auto_return: 'approved',
+        external_reference: order._id.toString(),
+        notification_url: `${appUrl}/api/webhooks/mercadopago`
+      }
+    });
+
+    console.log('MercadoPago preferencia creada:', preferenceData.id);
+
+    res.json({
+      init_point: preferenceData.init_point,
+      preference_id: preferenceData.id,
+      orderId: order._id
+    });
+  } catch (error) {
+    console.error('Error creando preferencia MercadoPago:', error);
+    res.status(500).json({ error: 'Error al crear el pago', details: error.message });
+  }
+});
+
+// Webhook de MercadoPago (recibe notificaciones de pago)
+app.post('/api/webhooks/mercadopago', async (req, res) => {
+  try {
+    const { type, data } = req.body;
+    console.log('MercadoPago webhook:', type, data);
+
+    if (type === 'payment') {
+      const mpClient = new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKEN });
+      // Obtener info del pago
+      const paymentResponse = await fetch(
+        `https://api.mercadopago.com/v1/payments/${data.id}`,
+        { headers: { 'Authorization': `Bearer ${process.env.MP_ACCESS_TOKEN}` } }
+      );
+      const payment = await paymentResponse.json();
+
+      if (payment.external_reference) {
+        const order = await Order.findById(payment.external_reference);
+        if (order) {
+          if (payment.status === 'approved') {
+            order.paymentStatus = 'paid';
+            order.orderStatus = 'processing';
+          } else if (payment.status === 'pending' || payment.status === 'in_process') {
+            order.paymentStatus = 'pending';
+          } else {
+            order.paymentStatus = 'failed';
+            order.orderStatus = 'cancelled';
+          }
+          await order.save();
+          console.log(`Orden ${order._id} actualizada: pago ${payment.status}`);
+
+          // Limpiar carrito del usuario
+          if (payment.status === 'approved') {
+            await Cart.findOneAndUpdate({ userId: order.userId }, { items: [] });
+          }
+        }
+      }
+    }
+
+    res.sendStatus(200);
+  } catch (error) {
+    console.error('Error en webhook MercadoPago:', error);
+    res.sendStatus(200); // Siempre responder 200 para evitar reintentos
+  }
+});
+
+// Consultar estado de una orden
+app.get('/api/orders/:id', authenticateToken, async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.id);
+    if (!order) return res.status(404).json({ error: 'Orden no encontrada' });
+    if (order.userId.toString() !== req.user.userId && req.user.role !== 'admin') {
+      return res.status(403).json({ error: 'No autorizado' });
+    }
+    res.json(order);
+  } catch (error) {
+    res.status(500).json({ error: 'Error al obtener la orden' });
   }
 });
 
